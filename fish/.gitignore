@@ -1,0 +1,6 @@
+conf.d/
+completions/
+themes/
+fish_variables
+fish_plugins
+fish_variables*
