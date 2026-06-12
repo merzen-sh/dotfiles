@@ -9,7 +9,7 @@ tmux:
 
 tools:
     curl -s https://ohmyposh.dev/install.sh | bash -s
-    sudo pacman -S lazygit github-cli neovim keyd paru flatpak google-chrome btop docker docker-compose zoxide rclone
+    sudo pacman -S lazygit github-cli neovim keyd paru flatpak google-chrome btop docker docker-compose zoxide rclone go cargo rustup
 
 keyd:
     sudo pacman -S keyd

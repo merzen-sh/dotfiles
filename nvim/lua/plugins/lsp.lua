@@ -12,10 +12,9 @@ return {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
     opts = {
-      automatic_enable = false,
       ensure_installed = {
         "rust_analyzer", "jsonls", "html", "cssls", "tailwindcss",
-        "tsgo", "marksman", "yamlls", "oxlint",
+        "ts_ls", "marksman", "yamlls", "oxlint",
         "eslint", "emmet_ls", "svelte", "taplo", "clangd", "gopls",
         "pyright", "jdtls", "sqls"
       },
@@ -38,7 +37,7 @@ return {
         end,
       })
 
-      vim.lsp.enable('tsgo')
+      vim.lsp.enable('ts_ls')
       vim.lsp.enable('rust_analyzer')
 
       vim.lsp.config('rust_analyzer', {
