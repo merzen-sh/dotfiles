@@ -1,21 +1,27 @@
 DOTFILES_DIR := `pwd`
 
+_default:
+    @just link
+
 tmux:
     rm -f ~/.tmux.conf
     ln -sfn {{DOTFILES_DIR}}/.tmux.conf ~/.tmux.conf
 
 tools:
     curl -s https://ohmyposh.dev/install.sh | bash -s
-    sudo pacman -S lazygit github-cli neovim vim keyd yay paru flatpak
+    sudo pacman -S lazygit github-cli neovim keyd paru flatpak google-chrome btop docker docker-compose zoxide rclone
 
 keyd:
-    sudo mkdir -p /etc/keyd
-    sudo rm -f /etc/keyd/default.conf
+    sudo pacman -S keyd
     sudo ln -sfn {{DOTFILES_DIR}}/etc/keyd/default.conf /etc/keyd/default.conf
 
 fish:
     rm -rf ~/.config/fish
     ln -sfn {{DOTFILES_DIR}}/fish ~/.config/fish
+
+fastfetch:
+    rm -rf ~/.config/fastfetch
+    ln -sfn {{DOTFILES_DIR}}/fastfetch ~/.config/fastfetch
 
 nvim:
     rm -rf ~/.config/nvim
@@ -37,14 +43,10 @@ opencode:
     rm -rf ~/.config/opencode
     ln -sfn {{DOTFILES_DIR}}/opencode ~/.config/opencode
 
-mark:
-    rm -rf ~/.mark
-    ln -sfn {{DOTFILES_DIR}}/.mark ~/.mark
-
 niri:
     rm -rf ~/.config/niri
     ln -sfn {{DOTFILES_DIR}}/niri ~/.config/niri
 
-link: tmux fish nvim hypr kitty lazygit mark keyd opencode niri
+link: tmux fish nvim hypr kitty lazygit mark keyd opencode niri fastfetch
 
 install: link
