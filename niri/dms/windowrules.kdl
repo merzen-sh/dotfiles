@@ -1,2 +1,25 @@
 // DMS Window Rules - Managed by DankMaterialShell
 // Do not edit manually - changes may be overwritten
+
+// @id=wr_1782566669283907519 @name=com.mitchellh.ghostty
+window-rule {
+    match app-id="^com.mitchellh.ghostty$"
+    opacity 0.93
+    variable-refresh-rate true
+    clip-to-geometry true
+    tiled-state true
+}
+
+// @id=wr_1782566837382456131 @name=google-chrome
+window-rule {
+    match app-id="^google-chrome$"
+    opacity 0.98
+    block-out-from "screencast"
+    default-column-display "tabbed"
+}
+
+// @id=wr_1782567671857460711 @name=com.discordapp.Discord
+window-rule {
+    match app-id="^com.discordapp.Discord$"
+    opacity 0.95
+}

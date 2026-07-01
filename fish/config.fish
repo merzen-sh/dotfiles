@@ -16,3 +16,8 @@ fastfetch
 
 set -g fish_ambiguous_width 1
 set -g fish_emoji_width 2
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/mark/.local/bin" $PATH
+fish_add_path $HOME/trek/bin

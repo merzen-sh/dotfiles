@@ -74,7 +74,7 @@ end
 function ls; eza -al --color=always --group-directories-first --icons --git $argv; end
 function la; eza -a --color=always --group-directories-first --icons --git $argv; end
 function ll; eza -l --color=always --group-directories-first --icons $argv; end
-function lt; eza -aT --color=always --group-directories-first --icons $argv; end
+function lt; eza -aT --color=always --group-directories-first --icons -I "node_modules|cache|.git|dist|.turbo|.tanstack" $argv; end
 function l.; eza -a $argv | grep -e '^\.'; end
 
 function fe -d "Fuzzy search files and list with eza"
