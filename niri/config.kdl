@@ -305,7 +305,7 @@ window-rule {
 }
 
 blur {
-    passes 2 //More passes = stronger blur
+    passes 3 //More passes = stronger blur
     offset 2.0      // Sample distance per pass
     noise 0.03      // Add a grain overlay
     saturation 1.0  // Color saturation boost

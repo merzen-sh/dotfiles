@@ -4,7 +4,7 @@
 // @id=wr_1782566669283907519 @name=com.mitchellh.ghostty
 window-rule {
     match app-id="^com.mitchellh.ghostty$"
-    opacity 0.93
+    opacity 0.96
     variable-refresh-rate true
     clip-to-geometry true
     tiled-state true
@@ -21,5 +21,5 @@ window-rule {
 // @id=wr_1782567671857460711 @name=com.discordapp.Discord
 window-rule {
     match app-id="^com.discordapp.Discord$"
-    opacity 0.95
+    opacity 0.97
 }
