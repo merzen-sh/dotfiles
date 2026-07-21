@@ -47,6 +47,6 @@ niri:
     rm -rf ~/.config/niri
     ln -sfn {{DOTFILES_DIR}}/niri ~/.config/niri
 
-link: tmux fish nvim hypr kitty lazygit mark keyd opencode niri fastfetch
+link: tmux fish nvim hypr kitty lazygit keyd opencode niri fastfetch
 
 install: link

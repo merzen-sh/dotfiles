@@ -21,3 +21,13 @@ set -g fish_emoji_width 2
 # Added by Antigravity CLI installer
 set -gx PATH "/home/mark/.local/bin" $PATH
 fish_add_path $HOME/trek/bin
+
+# opencode
+fish_add_path /home/mark/.opencode/bin
+
+# pnpm
+set -gx PNPM_HOME "/home/mark/.local/share/pnpm"
+if not string match -q -- "$PNPM_HOME/bin" $PATH
+  set -gx PATH "$PNPM_HOME/bin" $PATH
+end
+# pnpm end

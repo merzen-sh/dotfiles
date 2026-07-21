@@ -60,7 +60,7 @@ return {
                     "json", "python", "ron", "javascript", "haskell",
                     "typescript", "tsx", "rust", "zig", "yaml", "html",
                     "css", "markdown", "markdown_inline", "bash", "lua",
-                    "vim", "vimdoc", "c", "dockerfile", "gitignore", "astro",
+                    "vim", "vimdoc",                     "c", "dockerfile", "gitignore", "astro", "cue",
                 },
                 auto_install = false,
             })

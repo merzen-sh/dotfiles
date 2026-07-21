@@ -16,7 +16,7 @@ return {
         "rust_analyzer", "jsonls", "html", "cssls", "tailwindcss",
         "ts_ls", "marksman", "yamlls", "oxlint",
         "eslint", "emmet_ls", "svelte", "taplo", "clangd", "gopls",
-        "pyright", "jdtls", "sqls"
+        "pyright", "jdtls", "sqls", "cue"
       },
     },
   },
@@ -69,7 +69,7 @@ return {
       local other_servers = {
         'html', 'cssls', 'tailwindcss', 'gopls',
         'marksman', 'yamlls', 'oxlint', 'eslint',
-        'emmet_ls', 'svelte', 'taplo', 'clangd', 'pyright', 'jdtls', 'sqls'
+        'emmet_ls', 'svelte', 'taplo', 'clangd', 'pyright', 'jdtls', 'sqls', 'cue'
       }
       for _, lsp in ipairs(other_servers) do
         vim.lsp.enable(lsp)

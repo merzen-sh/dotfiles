@@ -160,3 +160,32 @@ function rust-cache-push
 end
 
 abbr -a rs-stat 'sccache --show-stats'
+
+function __auto_load_env --on-variable PWD --description 'Auto load .env file on directory change'
+    if test -f .env
+        string match -r -v '^\s*#|^\s*$' < .env | while read -l line
+            if string match -r '^([^=]+)=(.*)$' -- $line > /dev/null
+                set -l key (string replace -r '=.*$' '' -- $line | string trim)
+                set -l value (string replace -r '^[^=]+=' '' -- $line | string trim -c '"\'')
+                
+                set -gx $key $value
+            end
+        end
+    end
+end
+
+function __auto_load_just_completions --on-variable PWD --description 'Dynamic just completions on directory change'
+    if type -q just
+        if test -f justfile; or test -f Justfile
+            just --completions fish | source
+        end
+    end
+end
+
+function rm --wraps=gio
+    if count $argv > /dev/null
+        gio trash $argv
+    else
+        echo "rm: missing operand"
+    end
+end

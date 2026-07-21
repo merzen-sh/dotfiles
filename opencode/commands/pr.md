@@ -16,7 +16,7 @@ Analyze the `Current diff` above. Identify not just the code changes, but the **
 
 ### 2. PR Generation
 Generate a professional PR following these constraints:
-- **Title:** Under 60 characters. Use conventional prefixes (e.g., `feat:`, `fix:`, `chore:`). 
+- **Title:** Under 40 characters. Use conventional prefixes (e.g., `feat:`, `fix:`, `chore:`). 
   - *Example:* `fix: prevent UI freezing during API timeouts`
 - **Body:** - **Summary:** A 1-2 sentence explanation of **WHY** these changes were made from a user perspective.
 
