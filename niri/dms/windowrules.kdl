@@ -4,7 +4,7 @@
 // @id=wr_1782566669283907519 @name=com.mitchellh.ghostty
 window-rule {
     match app-id="^com.mitchellh.ghostty$"
-    opacity 0.96
+    opacity 0.97
     variable-refresh-rate true
     clip-to-geometry true
     tiled-state true

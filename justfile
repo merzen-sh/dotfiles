@@ -47,6 +47,10 @@ niri:
     rm -rf ~/.config/niri
     ln -sfn {{DOTFILES_DIR}}/niri ~/.config/niri
 
+ghostty:
+    rm -rf ~/.config/ghostty
+    ln -sfn {{DOTFILES_DIR}}/ghostty ~/.config/ghostty
+
 link: tmux fish nvim hypr kitty lazygit keyd opencode niri fastfetch
 
 install: link
