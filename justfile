@@ -9,7 +9,7 @@ tmux:
 
 tools:
     curl -s https://ohmyposh.dev/install.sh | bash -s
-    sudo pacman -S lazygit github-cli neovim keyd paru flatpak google-chrome btop docker docker-compose zoxide rclone go cargo rustup
+    sudo pacman -S lazygit github-cli neovim keyd paru flatpak btop docker docker-compose zoxide
 
 keyd:
     sudo pacman -S keyd
@@ -27,13 +27,9 @@ nvim:
     rm -rf ~/.config/nvim
     ln -sfn {{DOTFILES_DIR}}/nvim ~/.config/nvim
 
-hypr:
-    rm -rf ~/.config/hypr
-    ln -sfn {{DOTFILES_DIR}}/hypr ~/.config/hypr
-
-kitty:
-    rm -rf ~/.config/kitty
-    ln -sfn {{DOTFILES_DIR}}/kitty ~/.config/kitty
+vim:
+    rm -f ~/.vimrc
+    ln -sfn {{DOTFILES_DIR}}/.vimrc ~/.vimrc
 
 lazygit:
     rm -rf ~/.config/lazygit
@@ -51,6 +47,10 @@ ghostty:
     rm -rf ~/.config/ghostty
     ln -sfn {{DOTFILES_DIR}}/ghostty ~/.config/ghostty
 
-link: tmux fish nvim hypr kitty lazygit keyd opencode niri fastfetch
+noctalia:
+    rm -rf ~/.config/noctalia
+    ln -sfn {{DOTFILES_DIR}}/ghostty ~/.config/noctalia
+
+link: tmux fish nvim vim lazygit keyd opencode niri fastfetch noctalia
 
 install: link

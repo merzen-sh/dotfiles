@@ -59,4 +59,4 @@ keybind = shift+enter=text:\n
 gtk-single-instance = true
 
 # Dank color generation
-theme = dankcolors
+theme = noctalia

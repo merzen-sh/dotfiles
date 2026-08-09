@@ -22,6 +22,15 @@ function cg
     cargo $argv
 end
 
+function cleartargets -d "Find and remove all Cargo target directories"
+    find $HOME/Projects -name "target" -type d -prune -exec rm -rfv {} +
+end
+
+function cleanall -d "Find and delete target, node_modules, and dist directories"
+    echo "Scanning and cleaning build directories..."
+    find . -type d \( -name "target" -o -name "node_modules" -o -name "dist" \) -prune -exec rm -rfv {} +
+end
+
 function gstart
     set branch_name $argv[1]
     if test -z "$branch_name"
@@ -161,28 +170,28 @@ end
 
 abbr -a rs-stat 'sccache --show-stats'
 
-function __auto_load_env --on-variable PWD --description 'Auto load .env file on directory change'
-    if test -f .env
-        string match -r -v '^\s*#|^\s*$' < .env | while read -l line
-            if string match -r '^([^=]+)=(.*)$' -- $line > /dev/null
-                set -l key (string replace -r '=.*$' '' -- $line | string trim)
-                set -l value (string replace -r '^[^=]+=' '' -- $line | string trim -c '"\'')
-                
-                set -gx $key $value
-            end
-        end
-    end
-end
+# function __auto_load_env --on-variable PWD --description 'Auto load .env file on directory change'
+#     if test -f .env
+#         string match -r -v '^\s*#|^\s*$' < .env | while read -l line
+#             if string match -r '^([^=]+)=(.*)$' -- $line > /dev/null
+#                 set -l key (string replace -r '=.*$' '' -- $line | string trim)
+#                 set -l value (string replace -r '^[^=]+=' '' -- $line | string trim -c '"\'')
+#
+#                 set -gx $key $value
+#             end
+#         end
+#     end
+# end
+#
+# function __auto_load_just_completions --on-variable PWD --description 'Dynamic just completions on directory change'
+#     if type -q just
+#         if test -f justfile; or test -f Justfile
+#             just --completions fish | source
+#         end
+#     end
+# end
 
-function __auto_load_just_completions --on-variable PWD --description 'Dynamic just completions on directory change'
-    if type -q just
-        if test -f justfile; or test -f Justfile
-            just --completions fish | source
-        end
-    end
-end
-
-function rm --wraps=gio
+function rmb --wraps=gio
     if count $argv > /dev/null
         gio trash $argv
     else

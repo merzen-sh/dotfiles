@@ -31,3 +31,11 @@ if not string match -q -- "$PNPM_HOME/bin" $PATH
   set -gx PATH "$PNPM_HOME/bin" $PATH
 end
 # pnpm end
+
+# Wasmer
+export WASMER_DIR="/home/mark/.wasmer"
+[ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"
+
+set -gx WASMTIME_HOME "$HOME/.wasmtime"
+
+string match -r ".wasmtime" "$PATH" > /dev/null; or set -gx PATH "$WASMTIME_HOME/bin" $PATH

@@ -1,6 +1,8 @@
 -- OPTIONS
 local set = vim.opt
 
+set.guicursor = "n-v-c-i:block"
+
 --line nums
 set.relativenumber = true 
 set.number = true

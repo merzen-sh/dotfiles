@@ -8,13 +8,13 @@ return {
         require("nvim-tree").setup({
             view = {
                 width = 35,
-                side = "right",
+                side = "left",
             },
             renderer = {
                 icons = {
                     show = {
                         file = true,
-                        folder = true,
+                        folder = false,
                         folder_arrow = true,
                         git = true,
                     },
@@ -25,7 +25,7 @@ return {
                             unmerged = '',
                             renamed = '➜',
                             untracked = '',
-                            deleted = 'D',
+                            deleted = '',
                             ignored = 'I',
                         },
                     },
@@ -54,17 +54,6 @@ return {
                 },
             },
         })
-
-        -- Re-apply base46 nvim-tree highlights after setup
-        local ok, base46 = pcall(require, "base46")
-        if ok and base46.current_theme and base46.theme_tables[base46.current_theme] then
-            local highlights = base46.get_integration("nvimtree")
-            if highlights then
-                for hlname, hlopts in pairs(highlights) do
-                    vim.api.nvim_set_hl(0, hlname, hlopts)
-                end
-            end
-        end
 
         -- Keymaps
         vim.keymap.set('n', '<leader>cd', ':NvimTreeToggle<CR>', { desc = 'Toggle NvimTree' })
