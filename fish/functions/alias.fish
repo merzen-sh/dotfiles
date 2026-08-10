@@ -22,6 +22,39 @@ function cg
     cargo $argv
 end
 
+function mkcd --description "Create a directory and immediately cd into it"
+    mkdir -p $argv[1] && cd $argv[1]
+end
+
+function extract --description "Expand compressed archives accurately"
+    if test (count $argv) -eq 0
+        echo "Usage: extract <file>"
+        return 1
+    end
+    if test -f $argv[1]
+        switch $argv[1]
+            case '*.tar.bz2' '*.tbz2'
+                tar xjf $argv[1]
+            case '*.tar.gz' '*.tgz'
+                tar xzf $argv[1]
+            case '*.bz2'
+                bunzip2 $argv[1]
+            case '*.rar'
+                unrar x $argv[1]
+            case '*.gz'
+                gunzip $argv[1]
+            case '*.tar'
+                tar xf $argv[1]
+            case '*.zip'
+                unzip $argv[1]
+            case '*'
+                echo "Unknown file type: '$argv[1]'"
+        end
+    else
+        echo "'$argv[1]' is not a valid file"
+    end
+end
+
 
 function pclean -d "Interactively purge build directories permanently using fzf (all pre-selected)"
     set -l project_root "$HOME/Projects"
