@@ -18,6 +18,17 @@
         "ignoreMouseInput": false,
         "overviewLayer": false,
         "pinnedApps": [
+            "dev.zed.Zed",
+            "zen",
+            "com.discordapp.Discord",
+            "google-chrome",
+            "antigravity-ide",
+            "bruno",
+            "sqlitebrowser",
+            "com.mitchellh.ghostty",
+            "com.obsproject.Studio",
+            "org.prismlauncher.PrismLauncher",
+            "vault-cat"
         ],
         "position": "top_center",
         "screenshotAnnotationTool": "",
@@ -33,7 +44,7 @@
         "preferredPlayer": "",
         "spectrumFrameRate": 30,
         "spectrumMirrored": true,
-        "visualizerType": "mirrored",
+        "visualizerType": "linear",
         "volumeFeedback": false,
         "volumeFeedbackSoundFile": "",
         "volumeOverdrive": false,
@@ -60,6 +71,7 @@
         "middleClickCommand": "",
         "middleClickFollowMouse": false,
         "monitors": [
+            "HDMI-A-1"
         ],
         "mouseWheelAction": "workspace",
         "mouseWheelWrap": true,
@@ -70,6 +82,10 @@
         "rightClickCommand": "",
         "rightClickFollowMouse": true,
         "screenOverrides": [
+            {
+                "enabled": false,
+                "name": "HDMI-A-1"
+            }
         ],
         "showCapsule": true,
         "showOnWorkspaceSwitch": true,
@@ -205,6 +221,13 @@
                     "icon": "noctalia",
                     "id": "ControlCenter",
                     "useDistroLogo": false
+                },
+                {
+                    "defaultSettings": {
+                        "precision": 8,
+                        "showBarValue": true
+                    },
+                    "id": "plugin:noctalia-calculator"
                 }
             ]
         }
@@ -238,7 +261,7 @@
         "manualSunrise": "06:30",
         "manualSunset": "18:30",
         "monitorForColors": "",
-        "predefinedScheme": "Monochrome",
+        "predefinedScheme": "Murata",
         "schedulingMode": "off",
         "syncGsettings": true,
         "useWallpaperColors": false
@@ -304,57 +327,57 @@
         }
     },
     "desktopWidgets": {
-        "enabled": false,
-        "gridSnap": false,
-        "gridSnapScale": false,
+        "enabled": true,
+        "gridSnap": true,
+        "gridSnapScale": true,
         "monitorWidgets": [
             {
                 "name": "HDMI-A-1",
                 "widgets": [
                     {
-                        "clockColor": "none",
-                        "clockStyle": "digital",
+                        "clockColor": "primary",
+                        "clockStyle": "minimal",
                         "customFont": "",
                         "format": "HH:mm\\nd MMMM yyyy",
                         "id": "Clock",
                         "roundedCorners": true,
-                        "scale": 1,
+                        "scale": 1.6955684007707128,
                         "showBackground": true,
                         "useCustomFont": false,
-                        "x": 874,
-                        "y": 56
+                        "x": 880,
+                        "y": 80
                     },
                     {
                         "id": "Weather",
                         "roundedCorners": true,
-                        "scale": 1,
+                        "scale": 0.9025614741332115,
                         "showBackground": true,
-                        "x": 1046,
-                        "y": 56
+                        "x": 800,
+                        "y": 260
                     },
                     {
                         "diskPath": "/",
                         "id": "SystemStat",
                         "layout": "bottom",
                         "roundedCorners": true,
-                        "scale": 1,
+                        "scale": 1.3114400257866687,
                         "showBackground": true,
                         "statType": "CPU",
-                        "x": 453,
-                        "y": 109
+                        "x": 40,
+                        "y": 80
                     },
                     {
-                        "colorName": "primary",
-                        "height": 72,
-                        "hideWhenIdle": false,
-                        "id": "AudioVisualizer",
+                        "hideMode": "visible",
+                        "id": "MediaPlayer",
                         "roundedCorners": true,
-                        "scale": 1,
+                        "scale": 1.75,
+                        "showAlbumArt": true,
                         "showBackground": true,
+                        "showButtons": true,
+                        "showVisualizer": true,
                         "visualizerType": "linear",
-                        "width": 320,
-                        "x": 1044,
-                        "y": 162
+                        "x": 640,
+                        "y": 880
                     }
                 ]
             }
@@ -411,7 +434,7 @@
         "enableLockScreenCountdown": true,
         "enableLockScreenMediaControls": false,
         "enableShadows": true,
-        "forceBlackScreenCorners": true,
+        "forceBlackScreenCorners": false,
         "iRadiusRatio": 1,
         "keybinds": {
             "keyDown": [
@@ -449,7 +472,7 @@
         "radiusRatio": 1,
         "reverseScroll": false,
         "scaleRatio": 1,
-        "screenRadiusRatio": 0.88,
+        "screenRadiusRatio": 1,
         "shadowDirection": "bottom_right",
         "shadowOffsetX": 2,
         "shadowOffsetY": 3,
@@ -725,7 +748,7 @@
         "fontDefaultScale": 1,
         "fontFixed": "monospace",
         "fontFixedScale": 1,
-        "panelBackgroundOpacity": 1,
+        "panelBackgroundOpacity": 0.8,
         "panelsAttachedToBar": true,
         "scrollbarAlwaysVisible": true,
         "settingsPanelMode": "attached",
@@ -735,7 +758,7 @@
     },
     "wallpaper": {
         "automationEnabled": false,
-        "directory": "/home/mark/wallpapers/wallpapers",
+        "directory": "/home/mark/Wallpapers",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -769,7 +792,7 @@
         "useOriginalImages": false,
         "useSolidColor": false,
         "useWallhaven": false,
-        "viewMode": "single",
+        "viewMode": "recursive",
         "wallhavenApiKey": "",
         "wallhavenCategories": "111",
         "wallhavenOrder": "desc",

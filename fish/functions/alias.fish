@@ -22,14 +22,74 @@ function cg
     cargo $argv
 end
 
-function cleartargets -d "Find and remove all Cargo target directories"
-    find $HOME/Projects -name "target" -type d -prune -exec rm -rfv {} +
+
+function pclean -d "Interactively purge build directories permanently using fzf (all pre-selected)"
+    set -l project_root "$HOME/Projects"
+
+    # 1. Enforce execution boundary
+    if not string match -q "$project_root*" (pwd)
+        echo "Error: 'pclean' can only be executed inside $project_root" >&2
+        return 1
+    end
+
+    # 2. Verify fzf dependency
+    if not type -q fzf
+        echo "Error: 'fzf' is required but not installed." >&2
+        return 1
+    end
+
+    # 3. Merge default targets with custom arguments ($argv)
+    set -l targets target node_modules dist .next .turbo $argv
+
+    set -l find_expr
+    for dir in $targets
+        if test (count $find_expr) -gt 0
+            set -a find_expr -o
+        end
+        set -a find_expr -name $dir
+    end
+
+    echo "Scanning for build directories..."
+
+    # 4. Search and store matches
+    set -l matches (find . -mindepth 1 \( $find_expr \) -type d -prune 2>/dev/null)
+
+    if test (count $matches) -eq 0
+        echo "No build directories found matching: $targets"
+        return 0
+    end
+
+    # 5. Interactive multi-selection with ALL items pre-selected on open
+    set -l selected (string split \n -- $matches | \
+        fzf --multi \
+            --prompt="Select directories to PURGE > " \
+            --header="ENTER: confirm delete | TAB: toggle | CTRL-D: deselect all | CTRL-A: select all" \
+            --bind="start:select-all,ctrl-a:select-all,ctrl-d:deselect-all" \
+            --preview="
+                echo '=== Disk Space Usage ==='
+                du -sh {} 2>/dev/null
+                echo ''
+                echo '=== Contents ==='
+                ls -la {} 2>/dev/null | head -n 12
+            " \
+            --preview-window=right:45% \
+            --height=75% \
+            --layout=reverse \
+            --border)
+
+    if test (count $selected) -eq 0
+        echo "No directories selected. Aborting."
+        return 0
+    end
+
+    # 6. Execute permanent removal using 'command rm' to bypass custom wrapper
+    echo "Permanently deleting selected directories..."
+    for dir in $selected
+        command rm -rf "$dir"
+        and echo "Deleted: $dir"
+    end
 end
 
-function cleanall -d "Find and delete target, node_modules, and dist directories"
-    echo "Scanning and cleaning build directories..."
-    find . -type d \( -name "target" -o -name "node_modules" -o -name "dist" \) -prune -exec rm -rfv {} +
-end
 
 function gstart
     set branch_name $argv[1]
@@ -134,11 +194,11 @@ function rust-cache-pull
     if test -f $cache_zip
         echo "📂 Unzipping cache to $SCCACHE_DIR..."
 
-        rm -rf "$SCCACHE_DIR/*"
+        command rm -rf "$SCCACHE_DIR/*"
         7z x $cache_zip -o"$SCCACHE_DIR" -y >/dev/null
 
         echo "✅ Pull and Install complete."
-        rm -f $cache_zip
+        command rm -f $cache_zip
     else
         echo "❌ Error: Cache file not found on cloud."
     end
@@ -157,7 +217,7 @@ function rust-cache-push
 
     echo "📦 Compressing cache with 7z..."
 
-    rm -f $cache_zip
+    command rm -f $cache_zip
     7z a $cache_zip "$SCCACHE_DIR/*" -mx1
 
     echo "🚀 Uploading zipped cache to cloud..."
@@ -191,10 +251,170 @@ abbr -a rs-stat 'sccache --show-stats'
 #     end
 # end
 
-function rmb --wraps=gio
-    if count $argv > /dev/null
+function rm --description "Safely move files to trash using gio trash"
+    # Silently absorb common rm flags (-r, -f, -v, -i, -d, --recursive, --force)
+    argparse 'r/recursive' 'f/force' 'v/verbose' 'i' 'd/dir' -- $argv 2>/dev/null
+
+    # $argv now contains ONLY the file/directory paths with flags removed
+    if test (count $argv) -gt 0
         gio trash $argv
     else
-        echo "rm: missing operand"
+        echo "rm: missing operand" >&2
+        return 1
+    end
+end
+
+function trash-restore -d "Interactively restore items from ~/.local/share/Trash to original paths"
+    set -l trash_dir "$HOME/.local/share/Trash"
+    set -l files_dir "$trash_dir/files"
+    set -l info_dir "$trash_dir/info"
+
+    if not test -d "$files_dir"
+        echo "Error: Trash directory ($files_dir) not found." >&2
+        return 1
+    end
+
+    if not type -q fzf
+        echo "Error: 'fzf' is required but not installed." >&2
+        return 1
+    end
+
+    # Export TRASH_INFO_DIR for subshell visibility
+    set -x TRASH_INFO_DIR "$info_dir"
+
+    # Select items using native Fish syntax inside fzf preview
+    set -l selected (find "$files_dir" -mindepth 1 -maxdepth 1 2>/dev/null | \
+        fzf --multi \
+            --prompt="Select items to restore > " \
+            --header="TAB: toggle | CTRL-A: select all | ENTER: restore" \
+            --bind="ctrl-a:select-all" \
+            --preview='
+                set item {}
+                set name (basename $item)
+                set info_file "$TRASH_INFO_DIR/$name.trashinfo"
+                if test -f $info_file
+                    echo "=== Original Path ==="
+                    grep -E "^Path=" $info_file | cut -d= -f2-
+                    echo ""
+                    echo "=== Deletion Date ==="
+                    grep -E "^DeletionDate=" $info_file | cut -d= -f2-
+                    echo ""
+                end
+                echo "=== Contents ==="
+                ls -la $item 2>/dev/null
+            ' \
+            --preview-window=right:50% \
+            --height=75% \
+            --layout=reverse \
+            --border)
+
+    if test (count $selected) -eq 0
+        echo "No items selected. Aborting."
+        return 0
+    end
+
+    for item in $selected
+        set -l name (basename "$item")
+        set -l info_file "$info_dir/$name.trashinfo"
+        set -l target_path
+
+        # Parse original Path from .trashinfo metadata
+        if test -f "$info_file"
+            set -l raw_path (grep -E '^Path=' "$info_file" | cut -d= -f2-)
+            if test -n "$raw_path"
+                set target_path (string unescape --style=url "$raw_path")
+            end
+        end
+
+        # Fallback to current working directory if metadata is missing
+        if test -z "$target_path"
+            set target_path "(pwd)/$name"
+        end
+
+        # Recreate parent directory structure if missing
+        set -l dest_dir (dirname "$target_path")
+        mkdir -p "$dest_dir"
+
+        # Restore file and remove metadata using command rm
+        if mv -v "$item" "$target_path"
+            test -f "$info_file"; and command rm -f "$info_file"
+        end
+    end
+end
+
+function trash-clean -d "Interactively select and permanently delete items from Trash using fzf"
+    set -l trash_dir "$HOME/.local/share/Trash"
+    set -l files_dir "$trash_dir/files"
+    set -l info_dir "$trash_dir/info"
+
+    if not test -d "$files_dir"
+        echo "Error: Trash directory ($files_dir) not found." >&2
+        return 1
+    end
+
+    if not type -q fzf
+        echo "Error: 'fzf' is required but not installed." >&2
+        return 1
+    end
+
+    # Find items in Trash
+    set -l matches (find "$files_dir" -mindepth 1 -maxdepth 1 2>/dev/null)
+
+    if test (count $matches) -eq 0
+        echo "Trash is already empty."
+        return 0
+    end
+
+    # Export for POSIX subshell in fzf preview
+    set -x TRASH_INFO_DIR "$info_dir"
+
+    # Select items to permanently delete (All pre-selected on launch)
+    set -l selected (string split \n -- $matches | \
+        fzf --multi \
+            --prompt="Select items to PURGE permanently > " \
+            --header="ENTER: confirm purge | TAB: toggle | CTRL-D: deselect all | CTRL-A: select all" \
+            --bind="start:select-all,ctrl-a:select-all,ctrl-d:deselect-all" \
+            --preview='
+                FILE="{}"
+                NAME=$(basename "$FILE")
+                INFO="$TRASH_INFO_DIR/$NAME.trashinfo"
+                echo "=== Size ==="
+                du -sh "$FILE" 2>/dev/null
+                echo ""
+                if [ -f "$INFO" ]; then
+                    echo "=== Original Location ==="
+                    grep -E "^Path=" "$INFO" | cut -d= -f2-
+                    echo ""
+                    echo "=== Trashed Date ==="
+                    grep -E "^DeletionDate=" "$INFO" | cut -d= -f2-
+                    echo ""
+                fi
+                echo "=== Contents ==="
+                ls -la "$FILE" 2>/dev/null | head -n 10
+            ' \
+            --preview-window=right:50% \
+            --height=75% \
+            --layout=reverse \
+            --border)
+
+    if test (count $selected) -eq 0
+        echo "No items selected. Aborting."
+        return 0
+    end
+
+    echo "Permanently deleting selected items..."
+    for item in $selected
+        set -l name (basename "$item")
+        set -l info_file "$info_dir/$name.trashinfo"
+
+        # 1. Permanently remove the actual file/folder
+        command rm -rf "$item"
+
+        # 2. Permanently remove matching .trashinfo metadata
+        if test -f "$info_file"
+            command rm -f "$info_file"
+        end
+
+        echo "Purged: $name"
     end
 end
