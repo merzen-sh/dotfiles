@@ -28,7 +28,8 @@
             "com.mitchellh.ghostty",
             "com.obsproject.Studio",
             "org.prismlauncher.PrismLauncher",
-            "vault-cat"
+            "vault-cat",
+            "io.dbeaver.DBeaver"
         ],
         "position": "top_center",
         "screenshotAnnotationTool": "",
