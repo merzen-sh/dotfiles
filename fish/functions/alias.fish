@@ -2,8 +2,8 @@ function j
     just $argv
 end
 
-function hx
-    helix $argv
+function n
+    nvim $argv
 end
 
 function t
@@ -14,12 +14,24 @@ function ta
     tmux a
 end
 
-function gm
+function gcm
     git commit -m $argv
 end
 
 function cg
     cargo $argv
+end
+
+function cgr
+    cargo run $argv
+end
+
+function cgb
+    cargo build $argv
+end
+
+function cgbr
+    cargo build --release $argv
 end
 
 function mkcd --description "Create a directory and immediately cd into it"
@@ -54,7 +66,6 @@ function extract --description "Expand compressed archives accurately"
         echo "'$argv[1]' is not a valid file"
     end
 end
-
 
 function pclean -d "Interactively purge build directories permanently using fzf (all pre-selected)"
     set -l project_root "$HOME/Projects"

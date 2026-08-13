@@ -49,7 +49,7 @@ ghostty:
 
 noctalia:
     rm -rf ~/.config/noctalia
-    ln -sfn {{DOTFILES_DIR}}/ghostty ~/.config/noctalia
+    ln -sfn {{DOTFILES_DIR}}/noctalia ~/.config/noctalia
 
 link: tmux fish nvim vim lazygit keyd opencode niri fastfetch noctalia
 

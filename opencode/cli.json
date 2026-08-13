@@ -1,0 +1,30 @@
+{
+  "theme": {
+    "name": "noctalia"
+  },
+  "diffs": {
+    "wrap": "word"
+  },
+  "session": {
+    "sidebar": "auto",
+    "scrollbar": false,
+    "thinking": "show"
+  },
+  "animations": true,
+  "debug": {
+    "devtools": true
+  },
+  "terminal": {
+    "copy_on_select": true,
+    "title": true
+  },
+  "attention": {
+    "enabled": false
+  },
+  "prompt": {
+    "paste": "compact"
+  },
+  "scroll": {
+    "speed": 4
+  }
+}

@@ -1,13 +1,7 @@
-window-rule {
-  // Rounded corners for a modern look.
-  geometry-corner-radius 8
+spawn-at-startup "qs" "-c" "noctalia-shell"
 
-  // Clips window contents to the rounded corner boundaries.
-  clip-to-geometry true
-}
 
 debug {
-  // Allows notification actions and window activation from Noctalia.
   honor-xdg-activation-with-invalid-serial
 }
 
@@ -35,10 +29,10 @@ layer-rule {
 // Set transparent workspace background color so you see the backdrop at all times.
 layout {
   background-color "transparent"
-  gaps 10
+  gaps 12
 
   focus-ring {
-    width 2
+    width 1
   }
 }
 
@@ -49,15 +43,26 @@ overview {
   }
 }
 
-/* Apps: blur them all without xray for a better look */
 window-rule {
-  background-effect {
-    blur true
-    xray false
-  }
+  // Rounded corners for a modern look.
+  geometry-corner-radius 12
+
+  // Clips window contents to the rounded corner boundaries.
+  clip-to-geometry true
+
+    // Crucial: The window must be transparent to see the blur behind it!
 }
 
-/* Noctalia: blur everywhere without xray for a better look */
+layer-rule {
+    match namespace="noctalia"
+    exclude namespace="(bar|noctalia-background)"
+
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
 layer-rule {
   match namespace="^noctalia-(background|launcher-overlay|dock)-.*$"
   background-effect {
@@ -67,9 +72,9 @@ layer-rule {
 
 blur {
   passes 3        // more passes = stronger blur (default: 3)
-  offset 3.0      // sample distance per pass (default: 3.0)
+  offset 1.2      // sample distance per pass (default: 3.0)
   noise 0.03      // grain overlay (default: 0.02)
-  saturation 1.0  // color saturation boost (default: 1.5)
+  saturation 1.2  // color saturation boost (default: 1.5)
 }
 
 binds {
@@ -214,4 +219,3 @@ binds {
 }
 
 include "./noctalia.kdl"
-

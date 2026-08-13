@@ -25,11 +25,11 @@
             "antigravity-ide",
             "bruno",
             "sqlitebrowser",
-            "com.mitchellh.ghostty",
             "com.obsproject.Studio",
             "org.prismlauncher.PrismLauncher",
             "vault-cat",
-            "io.dbeaver.DBeaver"
+            "io.dbeaver.DBeaver",
+            "code"
         ],
         "position": "top_center",
         "screenshotAnnotationTool": "",
@@ -54,12 +54,12 @@
     "bar": {
         "autoHideDelay": 500,
         "autoShowDelay": 150,
-        "backgroundOpacity": 1,
-        "barType": "framed",
+        "backgroundOpacity": 0.85,
+        "barType": "simple",
         "capsuleColorKey": "none",
         "capsuleOpacity": 1,
         "contentPadding": 2,
-        "density": "compact",
+        "density": "default",
         "displayMode": "always_visible",
         "enableExclusionZoneInset": true,
         "fontScale": 1,
@@ -72,7 +72,6 @@
         "middleClickCommand": "",
         "middleClickFollowMouse": false,
         "monitors": [
-            "HDMI-A-1"
         ],
         "mouseWheelAction": "workspace",
         "mouseWheelWrap": true,
@@ -88,10 +87,10 @@
                 "name": "HDMI-A-1"
             }
         ],
-        "showCapsule": true,
+        "showCapsule": false,
         "showOnWorkspaceSwitch": true,
         "showOutline": false,
-        "useSeparateOpacity": false,
+        "useSeparateOpacity": true,
         "widgetSpacing": 6,
         "widgets": {
             "center": [
@@ -192,6 +191,7 @@
                     "hidePassive": false,
                     "id": "Tray",
                     "pinned": [
+                        "Discord"
                     ]
                 },
                 {
@@ -262,7 +262,7 @@
         "manualSunrise": "06:30",
         "manualSunset": "18:30",
         "monitorForColors": "",
-        "predefinedScheme": "Everforest Material",
+        "predefinedScheme": "Merzen sh",
         "schedulingMode": "off",
         "syncGsettings": true,
         "useWallpaperColors": false
@@ -391,7 +391,7 @@
         "colorizeIcons": false,
         "deadOpacity": 0.6,
         "displayMode": "exclusive",
-        "dockType": "floating",
+        "dockType": "attached",
         "enabled": false,
         "floatingRatio": 1,
         "groupApps": true,
@@ -434,8 +434,8 @@
         "enableBlurBehind": true,
         "enableLockScreenCountdown": true,
         "enableLockScreenMediaControls": false,
-        "enableShadows": true,
-        "forceBlackScreenCorners": false,
+        "enableShadows": false,
+        "forceBlackScreenCorners": true,
         "iRadiusRatio": 1,
         "keybinds": {
             "keyDown": [
@@ -473,9 +473,9 @@
         "radiusRatio": 1,
         "reverseScroll": false,
         "scaleRatio": 1,
-        "screenRadiusRatio": 1,
-        "shadowDirection": "bottom_right",
-        "shadowOffsetX": 2,
+        "screenRadiusRatio": 0.56,
+        "shadowDirection": "bottom",
+        "shadowOffsetX": 0,
         "shadowOffsetY": 3,
         "showChangelogOnStartup": true,
         "showHibernateOnLockScreen": false,
@@ -714,10 +714,6 @@
             },
             {
                 "enabled": true,
-                "id": "ghostty"
-            },
-            {
-                "enabled": true,
                 "id": "discord"
             },
             {
@@ -739,6 +735,14 @@
             {
                 "enabled": true,
                 "id": "steam"
+            },
+            {
+                "enabled": true,
+                "id": "ghostty"
+            },
+            {
+                "enabled": true,
+                "id": "foot"
             }
         ],
         "enableUserTheming": true
@@ -754,12 +758,12 @@
         "scrollbarAlwaysVisible": true,
         "settingsPanelMode": "attached",
         "settingsPanelSideBarCardStyle": false,
-        "tooltipsEnabled": true,
-        "translucentWidgets": false
+        "tooltipsEnabled": false,
+        "translucentWidgets": true
     },
     "wallpaper": {
         "automationEnabled": false,
-        "directory": "/home/mark/Wallpapers",
+        "directory": "/home/mark/Wallpapers/gruvbox",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [
@@ -779,7 +783,7 @@
         "showHiddenFiles": false,
         "skipStartupTransition": false,
         "solidColor": "#1a1a2e",
-        "sortOrder": "name",
+        "sortOrder": "name_desc",
         "transitionDuration": 1500,
         "transitionEdgeSmoothness": 0.05,
         "transitionType": [
