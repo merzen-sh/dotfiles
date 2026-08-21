@@ -1,5 +1,4 @@
-spawn-at-startup "qs" "-c" "noctalia-shell"
-
+spawn-at-startup "sh" "-c" "QML_IMPORT_PATH=$HOME/.config/noctalia/plugins/dropdown-terminal qs -c noctalia-shell"
 
 debug {
   honor-xdg-activation-with-invalid-serial
@@ -43,15 +42,6 @@ overview {
   }
 }
 
-window-rule {
-  // Rounded corners for a modern look.
-  geometry-corner-radius 12
-
-  // Clips window contents to the rounded corner boundaries.
-  clip-to-geometry true
-
-    // Crucial: The window must be transparent to see the blur behind it!
-}
 
 layer-rule {
     match namespace="noctalia"
@@ -61,6 +51,18 @@ layer-rule {
         blur true
         xray false
     }
+}
+
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+}
+
+window-rule {
+    match app-id="^org\\.gnome\\.Nautilus$"
+    open-floating true 
+    default-column-width { fixed 900; }
+    default-window-height { fixed 600; }
 }
 
 layer-rule {
@@ -86,6 +88,7 @@ binds {
     Mod+S { spawn-sh "qs -c noctalia-shell ipc call controlCenter toggle"; }
     Mod+Comma { spawn-sh "qs -c noctalia-shell ipc call settings toggle"; }
     Mod+T hotkey-overlay-title="Open Terminal" { spawn "ghostty"; }
+    Mod+Escape hotkey-overlay-title="Toggle Dropdown Terminal" { spawn-sh "qs -c noctalia-shell ipc call plugin togglePanel dropdown-terminal"; }
 
     Mod+Space hotkey-overlay-title="Switch Language" { spawn-sh "niri msg keyboard-layouts | sed -n 's/^ *\\* *\\([0-9]*\\).*/\\1/p' | grep -q '^0$' && niri msg action switch-layout 1 || niri msg action switch-layout 0"; }
 
@@ -213,7 +216,7 @@ binds {
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
     // === System Controls ===
-    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    // Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 
 }

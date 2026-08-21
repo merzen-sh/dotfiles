@@ -10,8 +10,8 @@ set -gx FZF_DEFAULT_OPTS_FILE "$HOME/.config/fzf/fzfrc"
 set --export BUN_INSTALL "$HOME/.bun"
 set --export PATH $BUN_INSTALL/bin $PATH
 
-#oh my posh
-oh-my-posh init fish --config $HOME/dotfiles/mark.omp.json | source
+# starship
+starship init fish | source
 
 set -U fish_user_paths ~/.cargo/bin $fish_user_paths
 

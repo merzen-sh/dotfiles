@@ -7,6 +7,10 @@
         }
     ],
     "states": {
+        "dropdown-terminal": {
+            "enabled": true,
+            "sourceUrl": "https://github.com/ajunca/noctalia-dropdown-terminal"
+        },
         "noctalia-calculator": {
             "enabled": true,
             "sourceUrl": "https://github.com/noctalia-dev/noctalia-plugins"

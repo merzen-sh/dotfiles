@@ -8,8 +8,7 @@ tmux:
     ln -sfn {{DOTFILES_DIR}}/.tmux.conf ~/.tmux.conf
 
 tools:
-    curl -s https://ohmyposh.dev/install.sh | bash -s
-    sudo pacman -S lazygit github-cli neovim keyd paru flatpak btop docker docker-compose zoxide
+    sudo pacman -S starship lazygit github-cli neovim keyd paru flatpak btop docker docker-compose zoxide noctalia-shell noctalia
 
 keyd:
     sudo pacman -S keyd
@@ -51,6 +50,10 @@ noctalia:
     rm -rf ~/.config/noctalia
     ln -sfn {{DOTFILES_DIR}}/noctalia ~/.config/noctalia
 
-link: tmux fish nvim vim lazygit keyd opencode niri fastfetch noctalia
+starship:
+    rm -f ~/.config/starship.toml
+    ln -sfn {{DOTFILES_DIR}}/starship.toml ~/.config/starship.toml
+
+link: tmux fish nvim vim lazygit keyd opencode niri fastfetch noctalia starship
 
 install: link

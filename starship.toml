@@ -1,0 +1,73 @@
+command_timeout = 500
+
+[package]
+format = "[$symbol$version]($style) "
+symbol = ""
+style = "bold cyan"
+disabled = true 
+
+[nodejs]
+format = "[$symbol$version]($style) "
+symbol = "󰎙 "
+
+[bun]
+format = "[$symbol$version]($style) "
+style = "bold white"
+symbol = " "
+
+[golang]
+format = "[$symbol($version )]($style)"
+symbol = "󰟓 "
+disabled = false
+style = "bold #00ADD8"
+
+[python]
+format = "[$symbol($version )]($style)"
+symbol = "󰌠 "
+disabled = false
+style = "bold #FFD43B"
+
+[lua]
+format = "[$symbol($version )]($style)"
+symbol = " "
+disabled = false
+
+[c]
+format = "[$symbol($version )]($style)"
+symbol = " "
+disabled = false
+style = "bold #659AD2"
+
+[cpp]
+format = "[$symbol($version )]($style)"
+symbol = " "
+disabled = false
+style = "bold #00599C"
+
+[rust]
+symbol = "󱘗 "
+format = "[$symbol($version )]($style)"
+style = "bold #DF5E32"
+version_format = "${raw}"
+
+[directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "cyan"
+truncation_length = 2
+truncate_to_repo = false 
+truncation_symbol = "~/../"
+home_symbol = "~"
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = "\ue725 "
+style = "blue"
+
+#
+# [git_status]
+# format = "([$all_status$ahead_behind]($style) )"
+# style = "yellow"
+#
+[character]
+success_symbol = "[\uf105](green)"
+error_symbol = "[\uf105](red)"

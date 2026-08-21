@@ -1,23 +1,23 @@
 gui:
   theme:
     activeBorderColor:
-      - '#e78a4e'
+      - '#a9b665'
       - bold
     inactiveBorderColor:
       - '#827770'
     optionsTextColor:
-      - '#e78a4e'
+      - '#a9b665'
     selectedLineBgColor:
       - '#474240'
     cherryPickedCommitBgColor:
       - '#3c3836'
     cherryPickedCommitFgColor:
-      - '#a9b665'
+      - '#e78a4e'
     unstagedChangesColor:
       - '#ea6962'
     defaultFgColor:
       - '#ddc7a1'
     searchingActiveBorderColor:
-      - '#e78a4e'
+      - '#a9b665'
   showIcons: true
   nerdFontsVersion: "3"
