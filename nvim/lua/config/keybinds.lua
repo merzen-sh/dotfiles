@@ -10,6 +10,7 @@ vim.keymap.set("n", "<leader>ci", "diw")
 vim.keymap.set("n", "<leader>ee", "$")
 vim.keymap.set("n", "<leader>ww", "^")
 vim.keymap.set("n", "<leader>s", "<cmd>write<CR>")
+vim.keymap.set({ "n", "i", "v" }, "<C-s>", "<cmd>write<CR>")
 
 vim.g.clipboard = {
   name = 'wl-clipboard',

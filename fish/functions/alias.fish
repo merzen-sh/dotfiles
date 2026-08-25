@@ -462,3 +462,95 @@ function trash-clean -d "Interactively select and permanently delete items from 
         echo "Purged: $name"
     end
 end
+
+function gclone-url --description "Clone files directly from a specific GitHub folder URL"
+    if test (count $argv) -ne 1
+        echo "Usage: gclone-url <github_folder_url>"
+        return 1
+    end
+
+    set -l url $argv[1]
+
+    if not string match -r '^https://github\.com/([^/]+/[^/]+)/tree/([^/]+)/(.*)$' $url > /dev/null
+        echo "Error: Invalid GitHub folder URL structure."
+        echo "Expected pattern: https://github.com/owner/repo/tree/branch/path/to/dir"
+        return 1
+    end
+
+    set -l repo_path (string match -r '^https://github\.com/([^/]+/[^/]+)/tree/([^/]+)/(.*)$' $url)[2]
+    set -l branch    (string match -r '^https://github\.com/([^/]+/[^/]+)/tree/([^/]+)/(.*)$' $url)[3]
+    set -l target_dir (string match -r '^https://github\.com/([^/]+/[^/]+)/tree/([^/]+)/(.*)$' $url)[4]
+
+    set -l repo_url "https://github.com/$repo_path.git"
+    set -l tmp_dir (mktemp -d /tmp/gh_url_XXXXXX)
+
+    echo "==> Target Repo: $repo_url (Branch: $branch)"
+    echo "==> Target Path: $target_dir"
+
+    if git clone --depth 1 --branch $branch --filter=blob:none --sparse $repo_url $tmp_dir
+        pushd $tmp_dir
+        git sparse-checkout set $target_dir
+        popd
+
+        set -l src "$tmp_dir/$target_dir"
+
+        if test -d $src
+            cp -rn $src/* .
+            echo "✓ Extracted files directly into current directory."
+        else
+            echo "✗ Error: Directory '$target_dir' not found in repository."
+            rm -rf $tmp_dir
+            return 1
+        end
+
+        rm -rf $tmp_dir
+        echo "==> Cleanup completed."
+    else
+        echo "Error: Failed to clone repository."
+        rm -rf $tmp_dir
+        return 1
+    end
+end
+
+function gclone-sub --description "Clone specific subdirectories from a GitHub repository"
+    if test (count $argv) -lt 2
+        echo "Usage: gclone-sub <repo_url> <dir1> [dir2 ...]"
+        return 1
+    end
+
+    set -l repo $argv[1]
+    set -l dirs $argv[2..-1]
+    
+    set -l tmp_dir (mktemp -d /tmp/gh_clone_XXXXXX)
+
+    echo "==> Cloning repository into temporary directory..."
+    
+    if git clone --depth 1 --filter=blob:none --sparse $repo $tmp_dir
+        pushd $tmp_dir
+        
+        git sparse-checkout set $dirs
+        popd
+
+        for dir in $dirs
+            set -l src "$tmp_dir/$dir"
+            if test -d $src
+                set -l parent_dir (dirname $dir)
+                if test "$parent_dir" != "."
+                    mkdir -p $parent_dir
+                end
+                
+                mv $src $dir
+                echo "✓ Moved $dir -> ./$dir"
+            else
+                echo "✗ Warning: Directory '$dir' not found in repository."
+            end
+        end
+
+        rm -rf $tmp_dir
+        echo "==> Cleanup completed."
+    else
+        echo "Error: Failed to clone repository."
+        rm -rf $tmp_dir
+        return 1
+    end
+end

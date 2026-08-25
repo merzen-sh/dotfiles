@@ -7,63 +7,57 @@
         }
     },
     "display": {
-        "separator": " ",
+        "separator": ": ",
     },
     "modules": [
         {
             "type": "os",
-            "key": "󰣇 ",
+            "key": "󰣇 OS",
             "keycolor": "cyan",
         },
         {
             "type": "kernel",
-            "key": " ",
+            "key": " Kernel",
             "keyColor": "cyan",
         },
         {
             "type": "packages",
-            "key": " ",
+            "key": " Packages",
             "keyColor": "cyan",  
         },
         {
             "type": "shell",
-            "key": " ",
+            "key": " Shell",
             "keyColor": "cyan", 
         },
         {
             "type": "terminal",
-            "key": " ",
+            "key": " Terminal",
             "keyColor": "cyan", 
         },
         {
             "type": "wm",
-            "key": " ",
+            "key": " WM",
             "keyColor": "cyan", 
         },
         {
             "type": "terminalfont",
-            "key": " ",
+            "key": " Font",
             "keyColor": "cyan", 
         },
         {
             "type": "uptime",
-            "key": " ",
+            "key": " Uptime",
             "keyColor": "cyan", 
         },
         {
-            "type": "datetime",
-            "format": "{1}-{3}-{11}",
-            "key": " ",
-            "keyColor": "cyan", 
-        },
-                {
             "type": "memory",
-            "key": "󰍛 ",
+            "key": "󰍛 Memory",
             "keyColor": "cyan"
         },
-                {
+        {
             "type": "monitor",
-            "key": " ",
+            "key": " Monitor",
             "keyColor": "cyan",
         },
     ]

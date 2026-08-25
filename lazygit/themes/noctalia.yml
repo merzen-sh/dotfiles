@@ -26,5 +26,3 @@ gui:
       - "#a7cce1"
     defaultFgColor:
       - "#abbcc4"
-  showIcons: true
-  nerdFontsVersion: "3"

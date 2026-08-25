@@ -46,3 +46,5 @@ string match -r ".wasmtime" "$PATH" > /dev/null; or set -gx PATH "$WASMTIME_HOME
 # proto
 set -gx PROTO_HOME "$HOME/.proto";
 set -gx PATH "$PROTO_HOME/shims" "$PROTO_HOME/bin" $PATH;
+
+export RUSTC_WRAPPER=sccache

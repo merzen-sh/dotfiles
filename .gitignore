@@ -1,4 +1,8 @@
-noctalia/plugins
+noctalia/plugin*
+noctalia/*.json
 noctalia/colors.json
-niri/noctalia.kdl
+noctalia/.setup-complete
+noctalia/community-*
+noctalia/notification_history_assets
+noctalia/mpvpaper
 opencode/service.json

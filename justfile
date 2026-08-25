@@ -47,8 +47,12 @@ ghostty:
     ln -sfn {{DOTFILES_DIR}}/ghostty ~/.config/ghostty
 
 noctalia:
-    rm -rf ~/.config/noctalia
-    ln -sfn {{DOTFILES_DIR}}/noctalia ~/.config/noctalia
+    rm -rf ~/.local/state/noctalia/
+    ln -sfn {{DOTFILES_DIR}}/noctalia ~/.local/state/noctalia/
+
+hypr:
+    rm -rf ~/.config/hypr
+    ln -sfn {{DOTFILES_DIR}}/hypr ~/.config/hypr
 
 starship:
     rm -f ~/.config/starship.toml
