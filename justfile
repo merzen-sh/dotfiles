@@ -34,10 +34,6 @@ lazygit:
     rm -rf ~/.config/lazygit
     ln -sfn {{DOTFILES_DIR}}/lazygit ~/.config/lazygit
 
-opencode:
-    rm -rf ~/.config/opencode
-    ln -sfn {{DOTFILES_DIR}}/opencode ~/.config/opencode
-
 niri:
     rm -rf ~/.config/niri
     ln -sfn {{DOTFILES_DIR}}/niri ~/.config/niri
@@ -58,6 +54,6 @@ starship:
     rm -f ~/.config/starship.toml
     ln -sfn {{DOTFILES_DIR}}/starship.toml ~/.config/starship.toml
 
-link: tmux fish nvim vim lazygit keyd opencode niri fastfetch noctalia starship
+link: tmux fish nvim vim lazygit keyd niri fastfetch noctalia starship
 
 install: link
