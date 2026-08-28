@@ -7,3 +7,6 @@ noctalia/notification_history_assets
 noctalia/mpvpaper
 fastfetch/themes/noctalia.jsonc
 opencode/service.json
+hypr/noctalia.lua
+lazygit/themes/noctalia.yml
+nvim/lua/matugen.lua

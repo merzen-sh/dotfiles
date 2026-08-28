@@ -466,7 +466,7 @@ custom_palette = "Gruvbox"
 mode = "dark"
 pure_black_dark = false
 source = "wallpaper"
-wallpaper_scheme = "m3-tonal-spot"
+wallpaper_scheme = "m3-rainbow"
 
     [theme.templates]
     builtin_ids = [
