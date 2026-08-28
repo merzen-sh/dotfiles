@@ -1,37 +1,21 @@
-function j
-    just $argv
-end
+alias j="just"
+alias t="tmux"
+alias ta="tmux a"
+alias cg="cargo"
+alias cgr="cargo run"
+alias cgb="cargo build"
+alias cgbr="cargo build --release"
 
 function n
-    nvim $argv
-end
-
-function t
-    tmux $argv
-end
-
-function ta
-    tmux a
+    if test (count $argv) -eq 0
+        nvim .
+    else
+        nvim $argv
+    end
 end
 
 function gcm
-    git commit -m $argv
-end
-
-function cg
-    cargo $argv
-end
-
-function cgr
-    cargo run $argv
-end
-
-function cgb
-    cargo build $argv
-end
-
-function cgbr
-    cargo build --release $argv
+    git commit -m "$argv"
 end
 
 function mkcd --description "Create a directory and immediately cd into it"
@@ -274,18 +258,18 @@ end
 
 abbr -a rs-stat 'sccache --show-stats'
 
-# function __auto_load_env --on-variable PWD --description 'Auto load .env file on directory change'
-#     if test -f .env
-#         string match -r -v '^\s*#|^\s*$' < .env | while read -l line
-#             if string match -r '^([^=]+)=(.*)$' -- $line > /dev/null
-#                 set -l key (string replace -r '=.*$' '' -- $line | string trim)
-#                 set -l value (string replace -r '^[^=]+=' '' -- $line | string trim -c '"\'')
-#
-#                 set -gx $key $value
-#             end
-#         end
-#     end
-# end
+function load_env --on-variable PWD --description 'Auto load .env file on directory change'
+    if test -f .env
+        string match -r -v '^\s*#|^\s*$' < .env | while read -l line
+            if string match -r '^([^=]+)=(.*)$' -- $line > /dev/null
+                set -l key (string replace -r '=.*$' '' -- $line | string trim)
+                set -l value (string replace -r '^[^=]+=' '' -- $line | string trim -c '"\'')
+
+                set -gx $key $value
+            end
+        end
+    end
+end
 #
 # function __auto_load_just_completions --on-variable PWD --description 'Dynamic just completions on directory change'
 #     if type -q just

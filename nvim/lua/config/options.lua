@@ -1,10 +1,10 @@
 -- OPTIONS
 local set = vim.opt
 
-set.guicursor = "n-v-c-i:block"
+-- set.guicursor = "n-v-c-i:block"
 
 --line nums
-set.relativenumber = true 
+set.relativenumber = false 
 set.number = true
 
 --encoding
@@ -68,11 +68,3 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 
 vim.opt.signcolumn = "yes"
 vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-
-vim.filetype.add({
-    pattern = {
-        ["^bin/node$"] = "javascript",
-        ["^bin/bun$"] = "javascript",
-        ["^env bun$"] = "javascript",
-    },
-})

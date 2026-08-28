@@ -120,24 +120,23 @@ hl.env("HYPRCURSOR_SIZE", "24")
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
   general = {
-    gaps_in = 4,
-    gaps_out = 8,
-    border_size = 2,
+    gaps_in = 2,
+    gaps_out = 5,
+    border_size = 1,
   },
 
   decoration = {
-    rounding = 8,
+    rounding = 0,
     rounding_power = 2,
 
-    active_opacity = 0.95,  
-    inactive_opacity = 0.98, 
+    active_opacity = 0.94,  
+    inactive_opacity = 0.96, 
     fullscreen_opacity = 1.0, 
 
     shadow = {
       enabled = false,
       range = 3,
       render_power = 4,
-      color = 0xee1a1a1a,
     },
 
     blur = {
@@ -178,15 +177,15 @@ hl.window_rule({
 -- CONFIGURATION VARIABLES
 --------------------------------------------------------------------------------
 
-local global_speed = 6.0  -- Default 12.0
+local global_speed = 12.0  -- Default 12.0
 local speed_fast   = 4.0  -- Default 8.0
 local speed_normal = 2.25 -- Default 5.0
 local speed_out    = 1.75 -- Default 3.5 
 
 local spring_cfg = {
-  mass      = 0.51,  --Default 0.8
-  stiffness = 250,  --Default 350
-  dampening = 13 -- Default 30
+  mass      = 0.8,  --Default 0.8
+  stiffness = 450,  --Default 350
+  dampening = 25 -- Default 30
 }
 
 --------------------------------------------------------------------------------
@@ -323,7 +322,7 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
-local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
+-- local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + CTRL + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
@@ -338,6 +337,10 @@ hl.bind(mainMod .. " + COMMA", hl.dsp.exec_cmd(noctalia_ipc .. "settings-toggle"
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(noctalia_ipc .. "panel-toggle launcher"))
 hl.bind("ALT + Tab", hl.dsp.exec_cmd(noctalia_ipc .. "window-switcher"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(noctalia_ipc .. "panel-toggle wallpaper"))
+hl.bind(mainMod .. " + SHIFT + TAB", hl.dsp.exec_cmd(noctalia_ipc .. "panel-toggle noctalia/notes:panel "))
+
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(noctalia_ipc .. "desktop-widgets-toggle-edit"))
+
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + CTRL + H",  hl.dsp.focus({ direction = "left" }))

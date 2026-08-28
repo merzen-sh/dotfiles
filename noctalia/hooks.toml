@@ -1,0 +1,4 @@
+[hooks]
+wallpaper_changed = "~/.config/noctalia/hooks/on-wallpaper-change.sh"
+
+colors_changed = "~/.config/noctalia/hooks/on-color-change.sh"

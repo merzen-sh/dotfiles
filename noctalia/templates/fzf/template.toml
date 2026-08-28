@@ -1,0 +1,7 @@
+[catalog.fzf]
+name = "Fzf"
+category = "terminal"
+
+[templates.fzf]
+input_path = "fzfrc"
+output_path = "$XDG_CONFIG_HOME/fzf/fzfrc"
