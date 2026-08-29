@@ -444,5 +444,6 @@ hl.window_rule({
     float = true,
 })
 
+
 -- For Noctalia Color templates
 require("noctalia").apply_theme()

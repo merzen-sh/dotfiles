@@ -461,11 +461,11 @@ settings_show_advanced = true
 
 [theme]
 builtin = "Ayu"
-community_palette = "Gruber Darker"
+community_palette = "GruvboxAlt"
 custom_palette = "Gruvbox"
 mode = "dark"
-pure_black_dark = false
-source = "custom"
+pure_black_dark = true
+source = "community"
 wallpaper_scheme = "m3-rainbow"
 
     [theme.templates]
@@ -504,31 +504,21 @@ wallpaper_scheme = "m3-rainbow"
     ]
 
 [wallpaper]
-directory = "/home/mark/wallz"
+directory = "/home/mark/walls"
 enabled = true
 fill_mode = "stretch"
 
     [wallpaper.default]
-    path = "/home/mark/wallz/02. Dracula.jpg"
+    path = "/home/mark/walls/abstract/a_close_up_of_a_person_with_wings.jpg"
 
     [wallpaper.last]
-    path = "/home/mark/wallz/02. Dracula.jpg"
+    path = "/home/mark/walls/abstract/a_close_up_of_a_person_with_wings.jpg"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/mark/wallz/02. Dracula.jpg"
+    path = "/home/mark/walls/abstract/a_close_up_of_a_person_with_wings.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mark/wallz/02. Dracula.jpg"
-
-    [[wallpaper.favorite]]
-    path = "/home/mark/wallz/01. Lucid Aurora.png"
-    theme_mode = "auto"
-
-    [[wallpaper.favorite]]
-    builtin_palette = "Ayu"
-    palette_source = "builtin"
-    path = "/home/mark/wallz/13. Graphite Mono.jpg"
-    theme_mode = "dark"
+    path = "/home/mark/walls/abstract/a_close_up_of_a_person_with_wings.jpg"
 
 [widget.active_window]
 enabled = false

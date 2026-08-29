@@ -43,8 +43,8 @@ ghostty:
     ln -sfn {{DOTFILES_DIR}}/ghostty ~/.config/ghostty
 
 noctalia:
-    rm -rf ~/.local/state/noctalia/
-    ln -sfn {{DOTFILES_DIR}}/noctalia ~/.local/state/noctalia/
+    # rm -rf ~/.local/state/noctalia/
+    ln -sfn {{DOTFILES_DIR}}/noctalia ~/.local/state/noctalia
 
 hypr:
     rm -rf ~/.config/hypr
