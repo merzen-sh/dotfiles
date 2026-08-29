@@ -5,7 +5,7 @@ source (dirname (status filename))/functions/zoxide.fish
 
 # ==== env variables ==== #
 
-set -gx FZF_DEFAULT_OPTS_FILE "~/.config/fzf/fzfrc"
+set -gx FZF_DEFAULT_OPTS_FILE "$HOME/.config/fzf/fzfrc"
 
 set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --exclude .git'
 

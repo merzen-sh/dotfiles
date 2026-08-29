@@ -296,8 +296,8 @@ widget_order = [
     [desktop_widgets.widget.desktop-widget-0000000000000013]
     box_height = 816.0
     box_width = 880.0
-    cx = 1456.0
-    cy = 460.0
+    cx = 1400.0
+    cy = 572.0
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -461,11 +461,11 @@ settings_show_advanced = true
 
 [theme]
 builtin = "Ayu"
-community_palette = "ADW"
+community_palette = "Gruber Darker"
 custom_palette = "Gruvbox"
 mode = "dark"
 pure_black_dark = false
-source = "wallpaper"
+source = "custom"
 wallpaper_scheme = "m3-rainbow"
 
     [theme.templates]
@@ -509,16 +509,16 @@ enabled = true
 fill_mode = "stretch"
 
     [wallpaper.default]
-    path = "/home/mark/wallz/03. Rain Dark.png"
+    path = "/home/mark/wallz/02. Dracula.jpg"
 
     [wallpaper.last]
-    path = "/home/mark/wallz/03. Rain Dark.png"
+    path = "/home/mark/wallz/02. Dracula.jpg"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/mark/wallz/03. Rain Dark.png"
+    path = "/home/mark/wallz/02. Dracula.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mark/wallz/03. Rain Dark.png"
+    path = "/home/mark/wallz/02. Dracula.jpg"
 
     [[wallpaper.favorite]]
     path = "/home/mark/wallz/01. Lucid Aurora.png"
