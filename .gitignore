@@ -1,5 +1,6 @@
 noctalia/plugin*
 noctalia/*.json
+kitty/themes/*
 noctalia/colors.json
 noctalia/.setup-complete
 noctalia/community-*
