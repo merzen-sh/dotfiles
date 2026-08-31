@@ -40,10 +40,10 @@ hl.monitor({
 ---- MY PROGRAMS ----
 ---------------------
 
-local terminal    = "ghostty"
+local terminal    = "kitty"
 local fileManager = "nautilus"
 local menu        = "hyprlauncher"
-local browser     = "zen-browser"
+local browser     = "google-chrome-stable"
 local noctalia = "noctalia"
 local noctalia_ipc = noctalia .. " msg "
 
@@ -126,15 +126,15 @@ hl.config({
   },
 
   decoration = {
-    rounding = 0,
+    rounding = 4,
     rounding_power = 2,
 
-    active_opacity = 0.94,  
-    inactive_opacity = 0.96, 
+    active_opacity = 0.88,  
+    inactive_opacity = 0.90, 
     fullscreen_opacity = 1.0, 
 
     shadow = {
-      enabled = false,
+      enabled = true,
       range = 3,
       render_power = 4,
     },
@@ -142,7 +142,7 @@ hl.config({
     blur = {
       enabled = true,
       size = 3,
-      passes = 2,
+      passes = 3,
       vibrancy = 0.1696,
     },
   },
@@ -169,6 +169,13 @@ hl.window_rule({
 hl.window_rule({
     name = "nautilus",
     match = { class = "org.gnome.Nautilus" },
+    float = true,
+    size = { 1080, 820 },
+})
+
+hl.window_rule({
+    name = "dolphin",
+    match = { class = "org.kde.dolphin" },
     float = true,
     size = { 1080, 820 },
 })

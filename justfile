@@ -8,7 +8,7 @@ tmux:
     ln -sfn {{DOTFILES_DIR}}/.tmux.conf ~/.tmux.conf
 
 tools:
-    sudo pacman -S starship lazygit github-cli neovim keyd paru flatpak btop docker docker-compose zoxide noctalia-shell noctalia
+    sudo pacman -S starship lazygit github-cli neovim keyd paru flatpak btop docker docker-compose zoxide noctalia
 
 keyd:
     sudo pacman -S keyd
@@ -50,10 +50,14 @@ hypr:
     rm -rf ~/.config/hypr
     ln -sfn {{DOTFILES_DIR}}/hypr ~/.config/hypr
 
+kitty:
+    rm -rf ~/.config/kitty
+    ln -sfn {{DOTFILES_DIR}}/kitty ~/.config/kitty
+
 starship:
     rm -f ~/.config/starship.toml
     ln -sfn {{DOTFILES_DIR}}/starship.toml ~/.config/starship.toml
 
-link: tmux fish nvim vim lazygit keyd niri fastfetch noctalia starship
+link: tmux fish nvim vim lazygit keyd niri fastfetch noctalia starship kiyty
 
 install: link

@@ -1,5 +1,3 @@
--- lua/plugins/lsp.lua
-
 return {
   {
     "williamboman/mason.nvim",
@@ -18,6 +16,7 @@ return {
         "eslint", "emmet_ls", "svelte", "taplo", "clangd", "gopls",
         "pyright", "jdtls", "sqls", "cue"
       },
+      automatic_installation = true,
     },
   },
 
@@ -37,9 +36,6 @@ return {
         end,
       })
 
-      vim.lsp.enable('ts_ls')
-      vim.lsp.enable('rust_analyzer')
-
       vim.lsp.config('rust_analyzer', {
         settings = {
           ['rust-analyzer'] = {
@@ -50,6 +46,7 @@ return {
           },
         },
       })
+      vim.lsp.enable('rust_analyzer')
 
       vim.lsp.config('jsonls', {
         settings = {
@@ -67,10 +64,11 @@ return {
       vim.lsp.enable('jsonls')
 
       local other_servers = {
-        'html', 'cssls', 'tailwindcss', 'gopls',
+        'ts_ls', 'html', 'cssls', 'tailwindcss', 'gopls',
         'marksman', 'yamlls', 'oxlint', 'eslint',
         'emmet_ls', 'svelte', 'taplo', 'clangd', 'pyright', 'jdtls', 'sqls', 'cue'
       }
+
       for _, lsp in ipairs(other_servers) do
         vim.lsp.enable(lsp)
       end
