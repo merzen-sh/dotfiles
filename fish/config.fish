@@ -21,6 +21,8 @@ if status is-interactive
     # echo "merzen-sh@arch"
 end
 
+export QT_QPA_PLATFORMTHEME=qt6ct
+
 # ==== env paths ==== #
 
 # bun
@@ -36,3 +38,4 @@ starship init fish | source
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+~/.local/bin/mise activate fish | source

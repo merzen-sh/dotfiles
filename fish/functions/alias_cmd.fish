@@ -1,5 +1,7 @@
 alias j="just"
 alias t="tmux"
+alias m="mise"
+alias mr="mise run"
 alias ta="tmux a"
 alias cg="cargo"
 alias cgr="cargo run"
