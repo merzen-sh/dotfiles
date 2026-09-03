@@ -3,7 +3,6 @@ set -euo pipefail
 
 # Check if running inside WSL
 if ! grep -qi microsoft /proc/version 2>/dev/null; then
-    echo "Skipping win32yank: Not running inside WSL environment."
     exit 0
 fi
 

@@ -4,10 +4,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-DOTFILES_DIR = Path(os.environ.get("DOTFILES_DIR", Path.cwd()))
+DOTFILES_DIR = Path(os.environ.get("DOTFILES_DIR", Path.cwd())).resolve()
 HOME = Path.home()
 
-# Mapping of (source relative path, target absolute path)
 LINKS = [
     (".tmux.conf", HOME / ".tmux.conf"),
     (".vimrc", HOME / ".vimrc"),
@@ -15,28 +14,41 @@ LINKS = [
     ("fish", HOME / ".config" / "fish"),
     ("fastfetch", HOME / ".config" / "fastfetch"),
     ("nvim", HOME / ".config" / "nvim"),
-    ("lazygit", HOME / ".config" / "lazygit"),
+    # ("lazygit", HOME / ".config" / "lazygit"),
     ("niri", HOME / ".config" / "niri"),
     ("ghostty", HOME / ".config" / "ghostty"),
     ("hypr", HOME / ".config" / "hypr"),
     ("kitty", HOME / ".config" / "kitty"),
     ("noctalia", HOME / ".local" / "state" / "noctalia"),
-    # ("btop", HOME / ".config" / "btop"),
 ]
 
 
 def create_symlink(src: Path, dest: Path) -> None:
+    src = src.resolve()
+
     if not src.exists():
         print(f"Skipping: {src} does not exist.")
         return
 
+    # Ensure parent directory exists
     dest.parent.mkdir(parents=True, exist_ok=True)
 
+    # Check if correct symlink already exists
+    if dest.is_symlink():
+        try:
+            if dest.readlink().resolve() == src:
+                print(f"Already linked: {dest} -> {src}")
+                return
+        except OSError:
+            pass
+
+    # Remove existing target if it's incorrect or a real file/directory
     if dest.is_symlink() or dest.is_file():
         dest.unlink()
     elif dest.is_dir():
         shutil.rmtree(dest)
 
+    # Create new symlink
     dest.symlink_to(src)
     print(f"Linked: {src} -> {dest}")
 
@@ -46,9 +58,21 @@ def main() -> None:
         create_symlink(DOTFILES_DIR / src_rel, dest_path)
 
     # Keyd system config
-    keyd_src = DOTFILES_DIR / "etc" / "keyd" / "default.conf"
+    keyd_src = (DOTFILES_DIR / "etc" / "keyd" / "default.conf").resolve()
     keyd_dest = Path("/etc/keyd/default.conf")
+
     if keyd_src.exists():
+        keyd_dest.parent.mkdir(parents=True, exist_ok=True)
+
+        # Check existing symlink for keyd
+        if keyd_dest.is_symlink():
+            try:
+                if keyd_dest.readlink().resolve() == keyd_src:
+                    print(f"Already linked: {keyd_dest} -> {keyd_src}")
+                    return
+            except OSError:
+                pass
+
         subprocess.run(["sudo", "mkdir", "-p", "/etc/keyd"], check=True)
         subprocess.run(
             ["sudo", "ln", "-sfn", str(keyd_src), str(keyd_dest)], check=True
