@@ -17,18 +17,12 @@ def is_wsl_environment() -> bool:
     return False
 
 
-def get_active_desktop_environment() -> str:
-    """Detect the active Desktop Environment / Window Manager (e.g., hyprland, niri, gnome, kde)."""
-    desktop = (
-        os.environ.get("XDG_CURRENT_DESKTOP")
-        or os.environ.get("DESKTOP_SESSION")
-        or ""
-    )
-    return desktop.lower()
-
-
 IS_WSL_ENVIRONMENT = is_wsl_environment()
-CURRENT_DESKTOP_ENV = get_active_desktop_environment()
+# Read Desktop environment from Environment Variables (defaults to XDG_CURRENT_DESKTOP)
+ACTIVE_DESKTOP_ENV = os.environ.get(
+    "DOTFILES_DESKTOP", os.environ.get("XDG_CURRENT_DESKTOP", "")
+).lower()
+
 DOTFILES_DIR_PATH = Path(
     os.environ.get("DOTFILES_DIR", Path.cwd())
 ).resolve()
@@ -41,10 +35,9 @@ class SymlinkTarget:
     target_absolute_path: Path
     is_gui_only: bool = False
     requires_sudo: bool = False
-    target_desktop_env: str | None = None
 
 
-# 1. User-level Configuration Mappings (~/...)
+# 1. Base User Configurations (Runs across all environments)
 USER_CONFIG_MAPPINGS = [
     SymlinkTarget(".tmux.conf", USER_HOME_DIR / ".tmux.conf"),
     SymlinkTarget(".vimrc", USER_HOME_DIR / ".vimrc"),
@@ -65,22 +58,22 @@ USER_CONFIG_MAPPINGS = [
         USER_HOME_DIR / ".local" / "state" / "noctalia",
         is_gui_only=True,
     ),
-    # Desktop Environment Specific Configurations
-    SymlinkTarget(
-        "niri",
-        USER_HOME_DIR / ".config" / "niri",
-        is_gui_only=True,
-        target_desktop_env="niri",
-    ),
-    SymlinkTarget(
-        "hypr",
-        USER_HOME_DIR / ".config" / "hypr",
-        is_gui_only=True,
-        target_desktop_env="hyprland",
-    ),
 ]
 
-# 2. System-level Configuration Mappings (/etc/...)
+# 2. Dynamic Desktop Environment Mapping
+# Automatically maps folder if ENV is set (e.g., DOTFILES_DESKTOP=hyprland or niri)
+if ACTIVE_DESKTOP_ENV and not IS_WSL_ENVIRONMENT:
+    USER_CONFIG_MAPPINGS.append(
+        SymlinkTarget(
+            source_relative_path=ACTIVE_DESKTOP_ENV,
+            target_absolute_path=USER_HOME_DIR
+            / ".config"
+            / ACTIVE_DESKTOP_ENV,
+            is_gui_only=True,
+        )
+    )
+
+# 3. System-level Configuration Mappings
 SYSTEM_CONFIG_MAPPINGS = [
     SymlinkTarget(
         source_relative_path="etc/keyd/default.conf",
@@ -94,7 +87,7 @@ SYSTEM_CONFIG_MAPPINGS = [
 def process_user_symlink(
     source_absolute_path: Path, target_absolute_path: Path
 ) -> None:
-    """Create symlink safely for user-owned paths."""
+    """Safely create symlink for user space targets."""
     target_absolute_path.parent.mkdir(parents=True, exist_ok=True)
 
     if target_absolute_path.is_symlink():
@@ -122,7 +115,7 @@ def process_user_symlink(
 def process_system_symlink(
     source_absolute_path: Path, target_absolute_path: Path
 ) -> None:
-    """Create symlink for system-owned paths requiring root/sudo privileges."""
+    """Create symlink for system targets requiring elevated root privileges."""
     target_absolute_path.parent.mkdir(parents=True, exist_ok=True)
 
     if target_absolute_path.is_symlink():
@@ -154,37 +147,17 @@ def process_system_symlink(
     print(f"Linked (System): {source_absolute_path} -> {target_absolute_path}")
 
 
-def should_skip_target(target: SymlinkTarget) -> tuple[bool, str]:
-    """Determine whether a symlink target should be skipped based on OS and Desktop environment."""
-    if IS_WSL_ENVIRONMENT and target.is_gui_only:
-        return True, "WSL environment detected"
-
-    if target.target_desktop_env is not None:
-        if (
-            not CURRENT_DESKTOP_ENV
-            or target.target_desktop_env not in CURRENT_DESKTOP_ENV
-        ):
-            return (
-                True,
-                f"Active desktop '{CURRENT_DESKTOP_ENV or 'None'}' does not match target '{target.target_desktop_env}'",
-            )
-
-    return False, ""
-
-
 def main() -> None:
+    print("=== Running Symlink Setup ===")
     if IS_WSL_ENVIRONMENT:
-        print("=== Environment: WSL ===")
-    elif CURRENT_DESKTOP_ENV:
-        print(f"=== Active Desktop Environment: {CURRENT_DESKTOP_ENV} ===")
-    else:
-        print("=== Environment: TTY / Headless ===")
+        print("Environment: WSL (GUI targets will be skipped)")
+    elif ACTIVE_DESKTOP_ENV:
+        print(f"Active Desktop ENV: {ACTIVE_DESKTOP_ENV}")
 
-    # 1. Process User-level Configs
+    # Process User Configs
     for entry in USER_CONFIG_MAPPINGS:
-        skip, reason = should_skip_target(entry)
-        if skip:
-            print(f"Skipping ({entry.source_relative_path}): {reason}")
+        if IS_WSL_ENVIRONMENT and entry.is_gui_only:
+            print(f"Skipping (WSL): {entry.source_relative_path}")
             continue
 
         source_abs_path = (
@@ -196,11 +169,12 @@ def main() -> None:
 
         process_user_symlink(source_abs_path, entry.target_absolute_path)
 
-    # 2. Process System-level Configs
+    # Process System Configs
     for entry in SYSTEM_CONFIG_MAPPINGS:
-        skip, reason = should_skip_target(entry)
-        if skip:
-            print(f"Skipping System Task ({entry.source_relative_path}): {reason}")
+        if IS_WSL_ENVIRONMENT and entry.is_gui_only:
+            print(
+                f"Skipping System Task (WSL): {entry.source_relative_path}"
+            )
             continue
 
         source_abs_path = (
