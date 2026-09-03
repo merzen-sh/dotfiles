@@ -36,6 +36,4 @@ set --export PATH $BUN_INSTALL/bin $PATH
 # starship
 starship init fish | source
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
 mise activate fish | source
