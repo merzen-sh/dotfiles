@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# skip if running in WSL
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    exit 0
+fi
+
+DOTFILES_DIR="${DOTFILES_DIR:-$(pwd)}"
+SOFTWARE_DIR="$DOTFILES_DIR/software"
+
+if [[ ! -d "$SOFTWARE_DIR" ]]; then
+    echo "Software directory not found at $SOFTWARE_DIR"
+    exit 0
+fi
+
+# Loop through all executable .sh scripts in software directory
+for script in "$SOFTWARE_DIR"/*.sh; do
+    if [[ -f "$script" ]]; then
+        echo "Executing: $script"
+        chmod +x "$script"
+        "$script"
+    fi
+done
