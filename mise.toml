@@ -20,4 +20,4 @@ pnpm = "latest"
 depends = ["install"]
 
 [tasks.install]
-depends = ["link", "git", "wsl", "software"]
+depends = ["link", "git", "wsl", "software", "rust"]

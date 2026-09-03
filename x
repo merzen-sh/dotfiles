@@ -9,7 +9,7 @@ ln -sfn "$DOTFILES_DIR/mise.toml" "$HOME/.config/mise/mise.toml"
 
 echo "==> 2. Installing system-level packages..."
 
-shared_packages="mise"
+shared_packages="mise cargo"
 
 # Check if running inside WSL
 if grep -qi microsoft /proc/version 2>/dev/null; then

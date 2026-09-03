@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Setting up Rust toolchains..."
+
+# 2. Install Stable toolchain
+if ! rustup toolchain list | grep -q "^stable"; then
+    echo "Installing Rust stable toolchain..."
+    rustup toolchain install stable
+else
+    echo "Rust stable is already installed."
+fi
+
+# 3. Install Nightly toolchain
+if ! rustup toolchain list | grep -q "^nightly"; then
+    echo "Installing Rust nightly toolchain..."
+    rustup toolchain install nightly
+else
+    echo "Rust nightly is already installed."
+fi
+
+# 4. Set Nightly as default toolchain
+echo "Setting Rust default toolchain to nightly..."
+rustup default nightly
+
+echo "Rust toolchain setup complete:"
+rustc --version
