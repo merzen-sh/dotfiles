@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Check if running inside WSL
+# Check if not running inside WSL
 if ! grep -qi microsoft /proc/version 2>/dev/null; then
     exit 0
 fi
