@@ -17,7 +17,18 @@ def is_wsl_environment() -> bool:
     return False
 
 
+def get_active_desktop_environment() -> str:
+    """Detect the active Desktop Environment / Window Manager (e.g., hyprland, niri, gnome, kde)."""
+    desktop = (
+        os.environ.get("XDG_CURRENT_DESKTOP")
+        or os.environ.get("DESKTOP_SESSION")
+        or ""
+    )
+    return desktop.lower()
+
+
 IS_WSL_ENVIRONMENT = is_wsl_environment()
+CURRENT_DESKTOP_ENV = get_active_desktop_environment()
 DOTFILES_DIR_PATH = Path(
     os.environ.get("DOTFILES_DIR", Path.cwd())
 ).resolve()
@@ -30,6 +41,7 @@ class SymlinkTarget:
     target_absolute_path: Path
     is_gui_only: bool = False
     requires_sudo: bool = False
+    target_desktop_env: str | None = None
 
 
 # 1. User-level Configuration Mappings (~/...)
@@ -41,9 +53,7 @@ USER_CONFIG_MAPPINGS = [
     SymlinkTarget("fastfetch", USER_HOME_DIR / ".config" / "fastfetch"),
     SymlinkTarget("nvim", USER_HOME_DIR / ".config" / "nvim"),
     SymlinkTarget("fzf", USER_HOME_DIR / ".config" / "fzf"),
-    # Linux Desktop / Wayland Specific Configurations
-    # SymlinkTarget("niri", USER_HOME_DIR / ".config" / "niri", is_gui_only=True), # Maybe later
-    SymlinkTarget("hypr", USER_HOME_DIR / ".config" / "hypr", is_gui_only=True),
+    # General GUI Tools
     SymlinkTarget(
         "ghostty", USER_HOME_DIR / ".config" / "ghostty", is_gui_only=True
     ),
@@ -55,6 +65,19 @@ USER_CONFIG_MAPPINGS = [
         USER_HOME_DIR / ".local" / "state" / "noctalia",
         is_gui_only=True,
     ),
+    # Desktop Environment Specific Configurations
+    SymlinkTarget(
+        "niri",
+        USER_HOME_DIR / ".config" / "niri",
+        is_gui_only=True,
+        target_desktop_env="niri",
+    ),
+    SymlinkTarget(
+        "hypr",
+        USER_HOME_DIR / ".config" / "hypr",
+        is_gui_only=True,
+        target_desktop_env="hyprland",
+    ),
 ]
 
 # 2. System-level Configuration Mappings (/etc/...)
@@ -62,7 +85,7 @@ SYSTEM_CONFIG_MAPPINGS = [
     SymlinkTarget(
         source_relative_path="etc/keyd/default.conf",
         target_absolute_path=Path("/etc/keyd/default.conf"),
-        is_gui_only=True,  # Keyd is useless in WSL CLI context
+        is_gui_only=True,
         requires_sudo=True,
     ),
 ]
@@ -131,16 +154,37 @@ def process_system_symlink(
     print(f"Linked (System): {source_absolute_path} -> {target_absolute_path}")
 
 
+def should_skip_target(target: SymlinkTarget) -> tuple[bool, str]:
+    """Determine whether a symlink target should be skipped based on OS and Desktop environment."""
+    if IS_WSL_ENVIRONMENT and target.is_gui_only:
+        return True, "WSL environment detected"
+
+    if target.target_desktop_env is not None:
+        if (
+            not CURRENT_DESKTOP_ENV
+            or target.target_desktop_env not in CURRENT_DESKTOP_ENV
+        ):
+            return (
+                True,
+                f"Active desktop '{CURRENT_DESKTOP_ENV or 'None'}' does not match target '{target.target_desktop_env}'",
+            )
+
+    return False, ""
+
+
 def main() -> None:
     if IS_WSL_ENVIRONMENT:
-        print(
-            "=== WSL Environment Detected: Skipping GUI and Desktop-only mappings ==="
-        )
+        print("=== Environment: WSL ===")
+    elif CURRENT_DESKTOP_ENV:
+        print(f"=== Active Desktop Environment: {CURRENT_DESKTOP_ENV} ===")
+    else:
+        print("=== Environment: TTY / Headless ===")
 
     # 1. Process User-level Configs
     for entry in USER_CONFIG_MAPPINGS:
-        if IS_WSL_ENVIRONMENT and entry.is_gui_only:
-            print(f"Skipping (WSL): {entry.source_relative_path}")
+        skip, reason = should_skip_target(entry)
+        if skip:
+            print(f"Skipping ({entry.source_relative_path}): {reason}")
             continue
 
         source_abs_path = (
@@ -154,8 +198,9 @@ def main() -> None:
 
     # 2. Process System-level Configs
     for entry in SYSTEM_CONFIG_MAPPINGS:
-        if IS_WSL_ENVIRONMENT and entry.is_gui_only:
-            print(f"Skipping System Task (WSL): {entry.source_relative_path}")
+        skip, reason = should_skip_target(entry)
+        if skip:
+            print(f"Skipping System Task ({entry.source_relative_path}): {reason}")
             continue
 
         source_abs_path = (
