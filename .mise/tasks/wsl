@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Check if running inside WSL
+if ! grep -qi microsoft /proc/version 2>/dev/null; then
+    echo "Skipping win32yank: Not running inside WSL environment."
+    exit 0
+fi
+
+# Check if win32yank is already installed
+if command -v win32yank.exe &>/dev/null; then
+    echo "win32yank.exe is already installed."
+    exit 0
+fi
+
+echo "Installing win32yank for WSL clipboard support..."
+
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
+
+# Fetch latest release zip URL from GitHub API
+DOWNLOAD_URL=$(curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest \
+    | grep "browser_download_url.*x64.zip" \
+    | cut -d '"' -f 4)
+
+if [[ -z "$DOWNLOAD_URL" ]]; then
+    echo "Error: Failed to fetch win32yank download URL." >&2
+    exit 1
+fi
+
+# Download and extract
+curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/win32yank.zip"
+unzip -q "$TEMP_DIR/win32yank.zip" -d "$TEMP_DIR"
+
+# Install binary to /usr/local/bin
+sudo install -m 755 "$TEMP_DIR/win32yank.exe" /usr/local/bin/win32yank.exe
+
+echo "win32yank.exe installed successfully at /usr/local/bin/win32yank.exe"

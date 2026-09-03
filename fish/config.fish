@@ -38,4 +38,4 @@ starship init fish | source
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-~/.local/bin/mise activate fish | source
+mise activate fish | source

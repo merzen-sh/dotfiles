@@ -21,6 +21,7 @@ LINKS = [
     ("hypr", HOME / ".config" / "hypr"),
     ("kitty", HOME / ".config" / "kitty"),
     ("noctalia", HOME / ".local" / "state" / "noctalia"),
+    # ("btop", HOME / ".config" / "btop"),
 ]
 
 

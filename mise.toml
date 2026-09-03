@@ -16,4 +16,4 @@ eza = "latest"
 depends = ["install"]
 
 [tasks.install]
-depends = ["tools", "link", "git"]
+depends = ["link", "git", "wsl"]
