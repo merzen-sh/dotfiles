@@ -1,10 +1,10 @@
 return {
-    git = {
-        add = '│',
-        change = '│',
-        delete = '│',
-        topdelete = '-',
-        changedelete = '±',
-        untracked = '?',
-    }
+	git = {
+		add = "│",
+		change = "│",
+		delete = "│",
+		topdelete = "-",
+		changedelete = "±",
+		untracked = "?",
+	},
 }

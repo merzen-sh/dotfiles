@@ -4,12 +4,12 @@ local set = vim.opt
 -- set.guicursor = "n-v-c-i:block"
 
 --line nums
-set.relativenumber = true 
+set.relativenumber = true
 set.number = true
 
 --encoding
-set.encoding = 'utf-8'
-set.fileencoding = 'utf-8'
+set.encoding = "utf-8"
+set.fileencoding = "utf-8"
 
 --editor
 -- set.guifont = "JetBrainsMonoNerdFontMono:8,FiraCodeCodeNerdFont:h6"
@@ -63,7 +63,7 @@ set.updatetime = 50
 -- auto reload files changed on disk
 set.autoread = true
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
-  command = "checktime",
+	command = "checktime",
 })
 
 vim.opt.signcolumn = "yes"
