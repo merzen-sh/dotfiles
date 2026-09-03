@@ -15,6 +15,7 @@ node = "lts"
 pnpm = "latest"
 eza = "latest"
 fzf = "latest"
+tmux = "latest"
 
 [tasks.default]
 depends = ["install"]
