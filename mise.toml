@@ -10,7 +10,8 @@ btop = "latest"
 zoxide = "latest"
 go = "latest"
 rust = "latest"
-eza = "latest"
+# eza = "latest"
+# fzf = "latest"
 
 [tasks.default]
 depends = ["install"]
