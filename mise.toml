@@ -19,8 +19,5 @@ eza = "latest"
 fzf = "latest"
 tmux = "latest"
 
-[tasks.default]
-depends = ["install"]
-
 [tasks.install]
 depends = ["link", "git", "wsl", "software", "rust"]
