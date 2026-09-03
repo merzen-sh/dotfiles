@@ -5,6 +5,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+
 def is_wsl_environment() -> bool:
     """Check if the execution environment is WSL."""
     proc_version = Path("/proc/version")
@@ -22,9 +23,7 @@ ACTIVE_DESKTOP_ENV = os.environ.get(
     "DOTFILES_DESKTOP", os.environ.get("XDG_CURRENT_DESKTOP", "")
 ).lower()
 
-DOTFILES_DIR_PATH = Path(
-    os.environ.get("DOTFILES_DIR", Path.cwd())
-).resolve()
+DOTFILES_DIR_PATH = Path(os.environ.get("DOTFILES_DIR", Path.cwd())).resolve()
 USER_HOME_DIR = Path.home()
 
 
@@ -46,12 +45,8 @@ USER_CONFIG_MAPPINGS = [
     SymlinkTarget("nvim", USER_HOME_DIR / ".config" / "nvim"),
     SymlinkTarget("fzf", USER_HOME_DIR / ".config" / "fzf"),
     # General GUI Tools
-    SymlinkTarget(
-        "ghostty", USER_HOME_DIR / ".config" / "ghostty", is_gui_only=True
-    ),
-    SymlinkTarget(
-        "kitty", USER_HOME_DIR / ".config" / "kitty", is_gui_only=True
-    ),
+    SymlinkTarget("ghostty", USER_HOME_DIR / ".config" / "ghostty", is_gui_only=True),
+    SymlinkTarget("kitty", USER_HOME_DIR / ".config" / "kitty", is_gui_only=True),
     SymlinkTarget(
         "noctalia",
         USER_HOME_DIR / ".local" / "state" / "noctalia",
@@ -65,9 +60,7 @@ if ACTIVE_DESKTOP_ENV and not IS_WSL_ENVIRONMENT:
     USER_CONFIG_MAPPINGS.append(
         SymlinkTarget(
             source_relative_path=ACTIVE_DESKTOP_ENV,
-            target_absolute_path=USER_HOME_DIR
-            / ".config"
-            / ACTIVE_DESKTOP_ENV,
+            target_absolute_path=USER_HOME_DIR / ".config" / ACTIVE_DESKTOP_ENV,
             is_gui_only=True,
         )
     )
@@ -91,10 +84,7 @@ def process_user_symlink(
 
     if target_absolute_path.is_symlink():
         try:
-            if (
-                target_absolute_path.readlink().resolve()
-                == source_absolute_path
-            ):
+            if target_absolute_path.readlink().resolve() == source_absolute_path:
                 print(
                     f"Already linked: {target_absolute_path} -> {source_absolute_path}"
                 )
@@ -119,10 +109,7 @@ def process_system_symlink(
 
     if target_absolute_path.is_symlink():
         try:
-            if (
-                target_absolute_path.readlink().resolve()
-                == source_absolute_path
-            ):
+            if target_absolute_path.readlink().resolve() == source_absolute_path:
                 print(
                     f"Already linked: {target_absolute_path} -> {source_absolute_path}"
                 )
@@ -159,9 +146,7 @@ def main() -> None:
             print(f"Skipping (WSL): {entry.source_relative_path}")
             continue
 
-        source_abs_path = (
-            DOTFILES_DIR_PATH / entry.source_relative_path
-        ).resolve()
+        source_abs_path = (DOTFILES_DIR_PATH / entry.source_relative_path).resolve()
         if not source_abs_path.exists():
             print(f"Skipping (Not Found): {source_abs_path}")
             continue
@@ -171,14 +156,10 @@ def main() -> None:
     # Process System Configs
     for entry in SYSTEM_CONFIG_MAPPINGS:
         if IS_WSL_ENVIRONMENT and entry.is_gui_only:
-            print(
-                f"Skipping System Task (WSL): {entry.source_relative_path}"
-            )
+            print(f"Skipping System Task (WSL): {entry.source_relative_path}")
             continue
 
-        source_abs_path = (
-            DOTFILES_DIR_PATH / entry.source_relative_path
-        ).resolve()
+        source_abs_path = (DOTFILES_DIR_PATH / entry.source_relative_path).resolve()
         if not source_abs_path.exists():
             print(f"Skipping System Task (Not Found): {source_abs_path}")
             continue
