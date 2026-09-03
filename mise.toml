@@ -1,0 +1,19 @@
+[vars]
+DOTFILES_DIR = '{{config_root}}'
+
+[tools]
+starship = "latest"
+lazygit = "latest"
+github-cli = "latest"
+neovim = "latest"
+btop = "latest"
+zoxide = "latest"
+go = "latest"
+rust = "latest"
+eza = "latest"
+
+[tasks.default]
+depends = ["install"]
+
+[tasks.install]
+depends = ["tools", "link", "git"]

@@ -21,7 +21,6 @@ end = [
 ]
 font_family = "JetBrains Mono Light"
 font_scale = 0.9499999862164259
-icon_color = "secondary"
 layer = "top"
 margin_edge = 4
 margin_ends = 4
@@ -37,6 +36,7 @@ thickness = 24
 type = "google"
 
 [desktop_widgets]
+enabled = false
 schema_version = 2
 widget_order = [
     "desktop-widget-0000000000000013",
@@ -423,7 +423,7 @@ app_icon_colorize = false
 button_borders = true
 card_borders = true
 corner_radius_scale = 1.2500000186264515
-font_family = "JetBrains Mono SemiBold"
+font_family = "Cascadia Mono"
 input_borders = true
 panel_anchor_bar = "default"
 popup_borders = true
@@ -466,8 +466,8 @@ settings_show_advanced = true
     direction = "down"
 
 [theme]
-builtin = "Ayu"
-community_palette = "GruvboxAlt"
+builtin = "Dracula"
+community_palette = "Catppuccin Frappe Peach"
 pure_black_dark = true
 source = "community"
 wallpaper_scheme = "m3-rainbow"
@@ -504,16 +504,16 @@ enabled = true
 fill_mode = "stretch"
 
     [wallpaper.default]
-    path = "/home/mark/walls/minimal/a_video_game_screen_of_a_video_game_01.jpg"
+    path = "/home/mark/walls/poly/a_video_game_screen_with_a_diamond_and_green_lights.png"
 
     [wallpaper.last]
-    path = "/home/mark/walls/minimal/a_video_game_screen_of_a_video_game_01.jpg"
+    path = "/home/mark/walls/poly/a_video_game_screen_with_a_diamond_and_green_lights.png"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/mark/walls/minimal/a_video_game_screen_of_a_video_game_01.jpg"
+    path = "/home/mark/walls/poly/a_video_game_screen_with_a_diamond_and_green_lights.png"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mark/walls/minimal/a_video_game_screen_of_a_video_game_01.jpg"
+    path = "/home/mark/walls/poly/a_video_game_screen_with_a_diamond_and_green_lights.png"
 
 [widget.active_window]
 enabled = false

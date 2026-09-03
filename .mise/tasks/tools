@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mise install
+sudo pacman -S --needed keyd docker docker-compose flatpak paru noctalia
