@@ -42,7 +42,7 @@ USER_CONFIG_MAPPINGS = [
     SymlinkTarget("nvim", USER_HOME_DIR / ".config" / "nvim"),
     SymlinkTarget("fzf", USER_HOME_DIR / ".config" / "fzf"),
     # Linux Desktop / Wayland Specific Configurations
-    SymlinkTarget("niri", USER_HOME_DIR / ".config" / "niri", is_gui_only=True),
+    # SymlinkTarget("niri", USER_HOME_DIR / ".config" / "niri", is_gui_only=True), # Maybe later
     SymlinkTarget("hypr", USER_HOME_DIR / ".config" / "hypr", is_gui_only=True),
     SymlinkTarget(
         "ghostty", USER_HOME_DIR / ".config" / "ghostty", is_gui_only=True
