@@ -5,7 +5,6 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-
 def is_wsl_environment() -> bool:
     """Check if the execution environment is WSL."""
     proc_version = Path("/proc/version")
