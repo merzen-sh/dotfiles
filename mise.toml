@@ -13,8 +13,8 @@ rust = "latest"
 bun = "latest"
 node = "lts"
 pnpm = "latest"
-# eza = "latest"
-# fzf = "latest"
+eza = "latest"
+fzf = "latest"
 
 [tasks.default]
 depends = ["install"]
