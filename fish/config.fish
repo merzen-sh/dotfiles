@@ -36,4 +36,5 @@ set --export PATH $BUN_INSTALL/bin $PATH
 # starship
 starship init fish | source
 export PATH="$HOME/.local/bin:$PATH"
-mise activate fish | source
+# mise activate fish | source
+fish_add_path --global --move --path /home/mark/.local/share/mise/shims

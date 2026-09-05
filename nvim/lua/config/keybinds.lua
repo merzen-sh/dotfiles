@@ -15,18 +15,18 @@ vim.keymap.set({ "n", "i", "v" }, "<C-s>", "<cmd>write<CR>")
 local is_wsl = vim.fn.has("unix") == 1 and vim.fn.environ()["WSL_DISTRO_NAME"] ~= nil
 
 if not is_wsl then
-	vim.g.clipboard = {
-		name = "wl-clipboard",
-		copy = {
-			["+"] = "wl-copy",
-			["*"] = "wl-copy",
-		},
-		paste = {
-			["+"] = "wl-paste",
-			["*"] = "wl-paste",
-		},
-		cache_enabled = 0,
-	}
+    vim.g.clipboard = {
+        name = "wl-clipboard",
+        copy = {
+            ["+"] = "wl-copy",
+            ["*"] = "wl-copy",
+        },
+        paste = {
+            ["+"] = "wl-paste",
+            ["*"] = "wl-paste",
+        },
+        cache_enabled = 0,
+    }
 end
 
 vim.o.clipboard = "unnamedplus"
