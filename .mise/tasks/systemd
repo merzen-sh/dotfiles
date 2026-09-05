@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+sudo systemctl enable keyd.service
+sudo systemctl start keyd.service
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker

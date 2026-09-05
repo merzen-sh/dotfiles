@@ -55,15 +55,25 @@ USER_CONFIG_MAPPINGS = [
 ]
 
 # 2. Dynamic Desktop Environment Mapping
-# Automatically maps folder if ENV is set (e.g., DOTFILES_DESKTOP=hyprland or niri)
+# Maps desktop environment names to their actual config directory names.
+DESKTOP_CONFIG_NAMES = {
+    "hyprland": "hypr",
+    "niri": "niri",
+}
+
 if ACTIVE_DESKTOP_ENV and not IS_WSL_ENVIRONMENT:
+    desktop_config_name = DESKTOP_CONFIG_NAMES.get(
+        ACTIVE_DESKTOP_ENV, ACTIVE_DESKTOP_ENV
+    )
+
     USER_CONFIG_MAPPINGS.append(
         SymlinkTarget(
-            source_relative_path=ACTIVE_DESKTOP_ENV,
-            target_absolute_path=USER_HOME_DIR / ".config" / ACTIVE_DESKTOP_ENV,
+            source_relative_path=desktop_config_name,
+            target_absolute_path=USER_HOME_DIR / ".config" / desktop_config_name,
             is_gui_only=True,
         )
     )
+
 
 # 3. System-level Configuration Mappings
 SYSTEM_CONFIG_MAPPINGS = [

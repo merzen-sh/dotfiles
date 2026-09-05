@@ -21,3 +21,7 @@ tmux = "latest"
 
 [tasks.install]
 depends = ["link", "git", "wsl", "software", "rust"]
+depends_post = "systemd"
+
+[tasks.systemd]
+depends = ["systemd"]

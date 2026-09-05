@@ -52,4 +52,3 @@ keybind = shift+enter=text:\n
 # Rando stuff
 gtk-single-instance = true
 
-theme = noctalia
