@@ -1,27 +1,149 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-echo "Setting up Rust toolchains..."
+set -Eeuo pipefail
 
-# 2. Install Stable toolchain
-if ! rustup toolchain list | grep -q "^stable"; then
-    echo "Installing Rust stable toolchain..."
-    rustup toolchain install stable
-else
-    echo "Rust stable is already installed."
+# =============================================================================
+# Logging
+# =============================================================================
+
+log() {
+    printf '[INFO] %s\n' "$1"
+}
+
+success() {
+    printf '[ OK ] %s\n' "$1"
+}
+
+warn() {
+    printf '[WARN] %s\n' "$1" >&2
+}
+
+error() {
+    printf '[ERROR] %s\n' "$1" >&2
+}
+
+# =============================================================================
+# Error Handling
+# =============================================================================
+
+on_error() {
+    local exit_code=$?
+
+    error "Rust toolchain setup failed at line ${BASH_LINENO[0]}."
+
+    exit "$exit_code"
+}
+
+trap on_error ERR
+
+# =============================================================================
+# Requirements
+# =============================================================================
+
+if ! command -v rustup >/dev/null 2>&1; then
+    error "rustup is not installed."
+    error "Install Rust/rustup before running this script."
+    exit 1
 fi
 
-# 3. Install Nightly toolchain
-if ! rustup toolchain list | grep -q "^nightly"; then
-    echo "Installing Rust nightly toolchain..."
-    rustup toolchain install nightly
-else
-    echo "Rust nightly is already installed."
+if ! command -v rustc >/dev/null 2>&1; then
+    warn "rustc is not currently available in PATH."
 fi
 
-# 4. Set Nightly as default toolchain
-echo "Setting Rust default toolchain to nightly..."
-rustup default nightly
+# =============================================================================
+# Configuration
+# =============================================================================
 
-echo "Rust toolchain setup complete:"
-rustc --version
+readonly STABLE_TOOLCHAIN="stable"
+readonly NIGHTLY_TOOLCHAIN="nightly"
+readonly DEFAULT_TOOLCHAIN="nightly"
+
+# =============================================================================
+# Toolchain Detection
+# =============================================================================
+
+toolchain_installed() {
+    local toolchain="$1"
+
+    rustup toolchain list \
+        | awk '{print $1}' \
+        | grep -qx "$toolchain"
+}
+
+# =============================================================================
+# Stable
+# =============================================================================
+
+echo
+log "Checking Rust stable toolchain..."
+
+if toolchain_installed "$STABLE_TOOLCHAIN"; then
+    success "Rust stable is already installed."
+else
+    log "Installing Rust stable..."
+
+    rustup toolchain install \
+        "$STABLE_TOOLCHAIN"
+
+    success "Rust stable installed."
+fi
+
+# =============================================================================
+# Nightly
+# =============================================================================
+
+echo
+log "Checking Rust nightly toolchain..."
+
+if toolchain_installed "$NIGHTLY_TOOLCHAIN"; then
+    success "Rust nightly is already installed."
+else
+    log "Installing Rust nightly..."
+
+    rustup toolchain install \
+        "$NIGHTLY_TOOLCHAIN"
+
+    success "Rust nightly installed."
+fi
+
+# =============================================================================
+# Default Toolchain
+# =============================================================================
+
+echo
+log "Checking default Rust toolchain..."
+
+CURRENT_DEFAULT="$(
+    rustup default \
+        | awk '{print $1}'
+)"
+
+if [[ "$CURRENT_DEFAULT" == "$DEFAULT_TOOLCHAIN" ]]; then
+    success "Rust default toolchain is already ${DEFAULT_TOOLCHAIN}."
+else
+    log "Setting Rust default toolchain to ${DEFAULT_TOOLCHAIN}..."
+
+    rustup default \
+        "$DEFAULT_TOOLCHAIN"
+
+    success "Rust default toolchain set to ${DEFAULT_TOOLCHAIN}."
+fi
+
+# =============================================================================
+# Verification
+# =============================================================================
+
+echo
+log "Verifying Rust installation..."
+
+RUSTC_VERSION="$(rustc --version)"
+CARGO_VERSION="$(cargo --version)"
+RUSTUP_VERSION="$(rustup --version)"
+
+echo
+printf '  rustup: %s\n' "$RUSTUP_VERSION"
+printf '  rustc:  %s\n' "$RUSTC_VERSION"
+printf '  cargo:  %s\n' "$CARGO_VERSION"
+
+echo
+success "Rust toolchain setup complete."
