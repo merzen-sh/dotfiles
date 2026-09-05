@@ -269,10 +269,9 @@ hl.curve("special_smooth", {
     type = "bezier",
     points = {
         { 0.22, 1.0 },
-        { 0.36, 1.0 }
-    }
+        { 0.36, 1.0 },
+    },
 })
-
 
 --------------------------------------------------------------------------------
 -- GLOBAL
@@ -315,13 +314,12 @@ hl.animation({
     style = "popin 85%",
 })
 
-
 hl.animation({
     leaf = "specialWorkspaceIn",
     enabled = true,
     speed = 4,
     bezier = "special_smooth",
-    style = "slidevert"
+    style = "slidevert",
 })
 
 hl.animation({
@@ -329,7 +327,7 @@ hl.animation({
     enabled = true,
     speed = 5,
     bezier = "special_smooth",
-    style = "slidevert"
+    style = "slidevert",
 })
 
 --------------------------------------------------------------------------------
