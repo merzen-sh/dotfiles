@@ -1,11 +1,127 @@
 #!/usr/bin/env bash
 
-sudo systemctl enable keyd.service
-sudo systemctl start keyd.service
+set -Eeuo pipefail
 
-sudo systemctl enable docker
-sudo systemctl start docker
+# =============================================================================
+# Helpers
+# =============================================================================
 
-sudo groupadd docker
-sudo usermod -aG docker $USER
-newgrp docker
+log() {
+    printf '[INFO] %s\n' "$1"
+}
+
+success() {
+    printf '[ OK ] %s\n' "$1"
+}
+
+error() {
+    printf '[ERROR] %s\n' "$1" >&2
+}
+
+# =============================================================================
+# Require sudo
+# =============================================================================
+
+if [[ "${EUID}" -eq 0 ]]; then
+    error "Do not run this script as root."
+    error "Run it as your normal user: ./setup-services.sh"
+    exit 1
+fi
+
+if ! command -v sudo >/dev/null 2>&1; then
+    error "sudo is not installed."
+    exit 1
+fi
+
+sudo -v
+
+# =============================================================================
+# keyd
+# =============================================================================
+
+if command -v keyd >/dev/null 2>&1; then
+    log "Enabling keyd..."
+
+    sudo systemctl enable --now keyd.service
+
+    if systemctl is-active --quiet keyd.service; then
+        success "keyd.service is running."
+    else
+        error "keyd.service failed to start."
+        sudo systemctl status keyd.service --no-pager
+        exit 1
+    fi
+else
+    log "keyd is not installed. Skipping."
+fi
+
+# =============================================================================
+# Docker
+# =============================================================================
+
+if command -v docker >/dev/null 2>&1; then
+    log "Enabling Docker..."
+
+    sudo systemctl enable --now docker
+
+    if systemctl is-active --quiet docker; then
+        success "docker.service is running."
+    else
+        error "docker.service failed to start."
+        sudo systemctl status docker --no-pager
+        exit 1
+    fi
+else
+    log "Docker is not installed. Skipping."
+fi
+
+# =============================================================================
+# Docker group
+# =============================================================================
+
+if getent group docker >/dev/null 2>&1; then
+    log "docker group already exists."
+else
+    log "Creating docker group..."
+
+    sudo groupadd docker
+
+    success "docker group created."
+fi
+
+# =============================================================================
+# Add current user to docker group
+# =============================================================================
+
+if id -nG "$USER" | grep -qw docker; then
+    success "$USER is already in the docker group."
+else
+    log "Adding $USER to docker group..."
+
+    sudo usermod -aG docker "$USER"
+
+    success "$USER added to docker group."
+fi
+
+# =============================================================================
+# Verify
+# =============================================================================
+
+echo
+log "Service setup completed."
+
+echo
+echo "Docker:"
+docker --version 2>/dev/null || true
+
+echo
+echo "Groups:"
+id -nG "$USER"
+
+echo
+echo "NOTE:"
+echo "You may need to log out and log back in for the docker group"
+echo "membership to become active."
+echo
+echo "For the current shell only, you can run:"
+echo "    newgrp docker"

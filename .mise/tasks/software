@@ -1,24 +1,162 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-# skip if running in WSL
-if grep -qi microsoft /proc/version 2>/dev/null; then
+set -Eeuo pipefail
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+# When executed through mise, DOTFILES_DIR is provided by mise.toml:
+#
+#   [vars]
+#   DOTFILES_DIR = '{{config_root}}'
+#
+# When executed directly, fall back to the Git repository root.
+
+if [[ -n "${DOTFILES_DIR:-}" ]]; then
+    readonly DOTFILES_ROOT="$(realpath "$DOTFILES_DIR")"
+elif command -v git >/dev/null 2>&1 &&
+    git_root="$(git -C "${PWD}" rev-parse --show-toplevel 2>/dev/null)"; then
+    readonly DOTFILES_ROOT="$(realpath "$git_root")"
+else
+    readonly DOTFILES_ROOT="$(
+        cd "$(dirname "${BASH_SOURCE[0]}")/.."
+        pwd
+    )"
+fi
+
+readonly SOFTWARE_DIR="${DOTFILES_ROOT}/software"
+
+# =============================================================================
+# Logging
+# =============================================================================
+
+log() {
+    printf '[INFO] %s\n' "$1"
+}
+
+success() {
+    printf '[ OK ] %s\n' "$1"
+}
+
+warn() {
+    printf '[WARN] %s\n' "$1" >&2
+}
+
+error() {
+    printf '[ERROR] %s\n' "$1" >&2
+}
+
+# =============================================================================
+# Error Handling
+# =============================================================================
+
+on_error() {
+    local exit_code=$?
+
+    error "Software setup failed at line ${BASH_LINENO[0]}."
+
+    exit "$exit_code"
+}
+
+trap on_error ERR
+
+# =============================================================================
+# WSL Detection
+# =============================================================================
+
+is_wsl() {
+    if [[ -n "${WSL_INTEROP:-}" ]]; then
+        return 0
+    fi
+
+    if [[ -r /proc/version ]] &&
+        grep -qiE 'microsoft|wsl' /proc/version; then
+        return 0
+    fi
+
+    return 1
+}
+
+# =============================================================================
+# Environment
+# =============================================================================
+
+if is_wsl; then
+    log "WSL environment detected."
+    log "Skipping native Linux software setup."
     exit 0
 fi
 
-DOTFILES_DIR="${DOTFILES_DIR:-$(pwd)}"
-SOFTWARE_DIR="$DOTFILES_DIR/software"
+log "Native Linux environment detected."
+log "Dotfiles root: ${DOTFILES_ROOT}"
+
+# =============================================================================
+# Software Directory
+# =============================================================================
 
 if [[ ! -d "$SOFTWARE_DIR" ]]; then
-    echo "Software directory not found at $SOFTWARE_DIR"
+    warn "Software directory not found:"
+    warn "  ${SOFTWARE_DIR}"
     exit 0
 fi
 
-# Loop through all executable .sh scripts in software directory
-for script in "$SOFTWARE_DIR"/*.sh; do
-    if [[ -f "$script" ]]; then
-        echo "Executing: $script"
-        chmod +x "$script"
-        "$script"
+# =============================================================================
+# Discover Scripts
+# =============================================================================
+
+shopt -s nullglob
+
+SCRIPTS=(
+    "$SOFTWARE_DIR"/*.sh
+)
+
+shopt -u nullglob
+
+if (( ${#SCRIPTS[@]} == 0 )); then
+    log "No software setup scripts found."
+    exit 0
+fi
+
+# Deterministic execution order.
+mapfile -t SCRIPTS < <(
+    printf '%s\n' "${SCRIPTS[@]}" | sort
+)
+
+# =============================================================================
+# Execute Scripts
+# =============================================================================
+
+echo
+log "Found ${#SCRIPTS[@]} software setup script(s)."
+
+for script in "${SCRIPTS[@]}"; do
+    script_name="$(basename "$script")"
+
+    if [[ ! -f "$script" ]]; then
+        warn "Skipping non-file: ${script}"
+        continue
+    fi
+
+    if [[ ! -r "$script" ]]; then
+        error "Script is not readable: ${script}"
+        exit 1
+    fi
+
+    echo
+    log "Executing: ${script_name}"
+
+    if bash "$script"; then
+        success "${script_name} completed."
+    else
+        error "${script_name} failed."
+        exit 1
     fi
 done
+
+# =============================================================================
+# Complete
+# =============================================================================
+
+echo
+success "All software setup scripts completed."

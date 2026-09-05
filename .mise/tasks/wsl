@@ -1,37 +1,258 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-# Check if not running inside WSL
-if ! grep -qi microsoft /proc/version 2>/dev/null; then
+set -Eeuo pipefail
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+readonly REPO="equalsraf/win32yank"
+readonly INSTALL_DIR="/usr/local/bin"
+readonly BINARY_NAME="win32yank.exe"
+readonly INSTALL_PATH="${INSTALL_DIR}/${BINARY_NAME}"
+
+# =============================================================================
+# Logging
+# =============================================================================
+
+log() {
+    printf '[INFO] %s\n' "$1"
+}
+
+success() {
+    printf '[ OK ] %s\n' "$1"
+}
+
+warn() {
+    printf '[WARN] %s\n' "$1" >&2
+}
+
+error() {
+    printf '[ERROR] %s\n' "$1" >&2
+}
+
+# =============================================================================
+# Error Handling
+# =============================================================================
+
+cleanup() {
+    if [[ -n "${TEMP_DIR:-}" && -d "${TEMP_DIR:-}" ]]; then
+        rm -rf "$TEMP_DIR"
+    fi
+}
+
+on_error() {
+    local exit_code=$?
+    error "Installation failed at line ${BASH_LINENO[0]}."
+    exit "$exit_code"
+}
+
+trap cleanup EXIT
+trap on_error ERR
+
+# =============================================================================
+# WSL Detection
+# =============================================================================
+
+is_wsl() {
+    if [[ -n "${WSL_INTEROP:-}" ]]; then
+        return 0
+    fi
+
+    if [[ -r /proc/version ]] &&
+        grep -qiE 'microsoft|wsl' /proc/version; then
+        return 0
+    fi
+
+    return 1
+}
+
+if ! is_wsl; then
+    log "Not running inside WSL. Nothing to do."
     exit 0
 fi
 
-# Check if win32yank is already installed
-if command -v win32yank.exe &>/dev/null; then
-    echo "win32yank.exe is already installed."
+log "WSL environment detected."
+
+# =============================================================================
+# Check Existing Installation
+# =============================================================================
+
+if command -v "$BINARY_NAME" >/dev/null 2>&1; then
+    EXISTING_PATH="$(command -v "$BINARY_NAME")"
+
+    success "${BINARY_NAME} is already installed."
+    log "Path: ${EXISTING_PATH}"
+
     exit 0
 fi
 
-echo "Installing win32yank for WSL clipboard support..."
+# =============================================================================
+# Dependencies
+# =============================================================================
 
-TEMP_DIR=$(mktemp -d)
-trap 'rm -rf "$TEMP_DIR"' EXIT
+require_command() {
+    local command_name="$1"
 
-# Fetch latest release zip URL from GitHub API
-DOWNLOAD_URL=$(curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest \
-    | grep "browser_download_url.*x64.zip" \
-    | cut -d '"' -f 4)
+    if ! command -v "$command_name" >/dev/null 2>&1; then
+        error "Required command not found: ${command_name}"
+        exit 1
+    fi
+}
+
+require_command curl
+require_command unzip
+require_command python3
+require_command sudo
+
+# =============================================================================
+# Sudo
+# =============================================================================
+
+log "Checking sudo access..."
+
+sudo -v
+
+success "sudo access confirmed."
+
+# =============================================================================
+# Temporary Directory
+# =============================================================================
+
+TEMP_DIR="$(mktemp -d)"
+
+ZIP_PATH="${TEMP_DIR}/win32yank.zip"
+EXTRACT_DIR="${TEMP_DIR}/extract"
+
+mkdir -p "$EXTRACT_DIR"
+
+# =============================================================================
+# Fetch Latest Release
+# =============================================================================
+
+API_URL="https://api.github.com/repos/${REPO}/releases/latest"
+
+log "Fetching latest win32yank release..."
+
+DOWNLOAD_URL="$(
+    curl \
+        --fail \
+        --silent \
+        --show-error \
+        --location \
+        --retry 3 \
+        --retry-delay 2 \
+        --connect-timeout 10 \
+        --max-time 60 \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "$API_URL" \
+    | python3 -c '
+import json
+import sys
+
+data = json.load(sys.stdin)
+
+for asset in data.get("assets", []):
+    name = asset.get("name", "")
+    url = asset.get("browser_download_url", "")
+
+    if name.endswith("x64.zip"):
+        print(url)
+        break
+'
+)"
 
 if [[ -z "$DOWNLOAD_URL" ]]; then
-    echo "Error: Failed to fetch win32yank download URL." >&2
+    error "Could not find x64.zip in the latest GitHub release."
     exit 1
 fi
 
-# Download and extract
-curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/win32yank.zip"
-unzip -q "$TEMP_DIR/win32yank.zip" -d "$TEMP_DIR"
+log "Release URL found."
 
-# Install binary to /usr/local/bin
-sudo install -m 755 "$TEMP_DIR/win32yank.exe" /usr/local/bin/win32yank.exe
+# =============================================================================
+# Download
+# =============================================================================
 
-echo "win32yank.exe installed successfully at /usr/local/bin/win32yank.exe"
+log "Downloading ${BINARY_NAME}..."
+
+curl \
+    --fail \
+    --silent \
+    --show-error \
+    --location \
+    --retry 3 \
+    --retry-delay 2 \
+    --connect-timeout 10 \
+    --max-time 120 \
+    "$DOWNLOAD_URL" \
+    --output "$ZIP_PATH"
+
+if [[ ! -s "$ZIP_PATH" ]]; then
+    error "Downloaded archive is empty or missing."
+    exit 1
+fi
+
+success "Download completed."
+
+# =============================================================================
+# Extract
+# =============================================================================
+
+log "Extracting archive..."
+
+unzip \
+    -q \
+    "$ZIP_PATH" \
+    -d "$EXTRACT_DIR"
+
+EXTRACTED_BINARY="$(
+    find "$EXTRACT_DIR" \
+        -type f \
+        -name "$BINARY_NAME" \
+        -print \
+        -quit
+)"
+
+if [[ -z "$EXTRACTED_BINARY" ]]; then
+    error "Could not find ${BINARY_NAME} inside the archive."
+    exit 1
+fi
+
+success "Binary extracted."
+
+# =============================================================================
+# Install
+# =============================================================================
+
+log "Installing ${BINARY_NAME}..."
+
+sudo install \
+    -d \
+    -m 755 \
+    "$INSTALL_DIR"
+
+sudo install \
+    -m 755 \
+    "$EXTRACTED_BINARY" \
+    "$INSTALL_PATH"
+
+# =============================================================================
+# Verify
+# =============================================================================
+
+if [[ ! -x "$INSTALL_PATH" ]]; then
+    error "Installation completed but binary is not executable."
+    exit 1
+fi
+
+success "${BINARY_NAME} installed successfully."
+
+log "Path: ${INSTALL_PATH}"
+
+# =============================================================================
+# Complete
+# =============================================================================
+
+echo
+log "WSL clipboard support is ready."

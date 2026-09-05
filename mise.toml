@@ -21,11 +21,18 @@ tmux = "latest"
 "cargo:stylua" = "latest"
 
 [tasks.install]
-depends = ["link", "git", "wsl", "software", "rust","pre-commit"]
-depends_post = "systemd"
+description = "Install and configure the dotfiles environment"
+depends = [
+    "link",
+    "git",
+    "wsl",
+    "software",
+    "rust",
+    "pre-commit",
+]
 
 [tasks.pre-commit]
-description = "Run lua format before committing"
+description = "Format Lua files with StyLua"
 run = "stylua ."
 
 [tasks.systemd]
