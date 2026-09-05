@@ -21,8 +21,12 @@ tmux = "latest"
 "cargo:stylua" = "latest"
 
 [tasks.install]
-depends = ["link", "git", "wsl", "software", "rust"]
+depends = ["link", "git", "wsl", "software", "rust","pre-commit"]
 depends_post = "systemd"
+
+[tasks.pre-commit]
+description = "Run lua format before committing"
+run = "stylua ."
 
 [tasks.systemd]
 depends = ["systemd"]
