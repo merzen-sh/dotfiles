@@ -265,6 +265,15 @@ hl.curve("playfulSpring", {
     dampening = 28,
 })
 
+hl.curve("special_smooth", {
+    type = "bezier",
+    points = {
+        { 0.22, 1.0 },
+        { 0.36, 1.0 }
+    }
+})
+
+
 --------------------------------------------------------------------------------
 -- GLOBAL
 --------------------------------------------------------------------------------
@@ -304,6 +313,23 @@ hl.animation({
     speed = speed_out,
     bezier = "quick",
     style = "popin 85%",
+})
+
+
+hl.animation({
+    leaf = "specialWorkspaceIn",
+    enabled = true,
+    speed = 4,
+    bezier = "special_smooth",
+    style = "slidevert"
+})
+
+hl.animation({
+    leaf = "specialWorkspaceOut",
+    enabled = true,
+    speed = 5,
+    bezier = "special_smooth",
+    style = "slidevert"
 })
 
 --------------------------------------------------------------------------------
