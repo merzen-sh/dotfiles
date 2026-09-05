@@ -1,32 +1,179 @@
--- KEYBINDS
+-- =============================================================================
+-- KEYMAPS
+-- =============================================================================
+
+local map = vim.keymap.set
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.keymap.set("n", "<leader>rl", "<cmd>source ~/.config/nvim/init.lua<cr>")
 
-vim.keymap.set("n", "<leader>va", "ggVGY")
-vim.keymap.set("n", "<leader>yi", "yiw")
-vim.keymap.set("n", "<leader>ci", "diw")
-vim.keymap.set("n", "<leader>ee", "$")
-vim.keymap.set("n", "<leader>ww", "^")
-vim.keymap.set("n", "<leader>s", "<cmd>write<CR>")
-vim.keymap.set({ "n", "i", "v" }, "<C-s>", "<cmd>write<CR>")
+-- =============================================================================
+-- Config
+-- =============================================================================
 
-local is_wsl = vim.fn.has("unix") == 1 and vim.fn.environ()["WSL_DISTRO_NAME"] ~= nil
+map("n", "<leader>rl", function()
+    vim.cmd("source " .. vim.fn.stdpath("config") .. "/init.lua")
+end, {
+    desc = "Reload config",
+})
 
-if not is_wsl then
-    vim.g.clipboard = {
-        name = "wl-clipboard",
-        copy = {
-            ["+"] = "wl-copy",
-            ["*"] = "wl-copy",
-        },
-        paste = {
-            ["+"] = "wl-paste",
-            ["*"] = "wl-paste",
-        },
-        cache_enabled = 0,
-    }
-end
 
-vim.o.clipboard = "unnamedplus"
+-- =============================================================================
+-- Editing
+-- =============================================================================
+
+map("n", "<leader>va", "ggVGY", {
+    desc = "Yank entire file",
+})
+
+map("n", "<leader>ee", "$", {
+    desc = "End of line",
+})
+
+map("n", "<leader>ww", "^", {
+    desc = "Start of line",
+})
+
+
+-- =============================================================================
+-- Save
+-- =============================================================================
+
+map("n", "<leader>s", "<cmd>write<CR>", {
+    desc = "Save",
+})
+
+map({ "n", "i", "v" }, "<C-s>", "<cmd>write<CR>", {
+    desc = "Save",
+})
+
+map("n", "<Esc>", "<cmd>nohlsearch<CR>", {
+    desc = "Clear search highlight",
+})
+
+
+-- =============================================================================
+-- Windows
+-- =============================================================================
+
+map("n", "<C-h>", "<C-w>h", {
+    desc = "Move left",
+})
+
+map("n", "<C-j>", "<C-w>j", {
+    desc = "Move down",
+})
+
+map("n", "<C-k>", "<C-w>k", {
+    desc = "Move up",
+})
+
+map("n", "<C-l>", "<C-w>l", {
+    desc = "Move right",
+})
+
+map("n", "<leader>wv", "<cmd>vsplit<CR>", {
+    desc = "Vertical split",
+})
+
+map("n", "<leader>ws", "<cmd>split<CR>", {
+    desc = "Horizontal split",
+})
+
+map("n", "<leader>wc", "<cmd>close<CR>", {
+    desc = "Close window",
+})
+
+map("n", "<leader>wo", "<cmd>only<CR>", {
+    desc = "Only window",
+})
+
+
+-- =============================================================================
+-- Buffers
+-- =============================================================================
+
+map("n", "<leader>bn", "<cmd>bnext<CR>", {
+    desc = "Next buffer",
+})
+
+map("n", "<leader>bp", "<cmd>bprevious<CR>", {
+    desc = "Previous buffer",
+})
+
+map("n", "<leader>bd", "<cmd>bdelete<CR>", {
+    desc = "Delete buffer",
+})
+
+map("n", "<leader>bb", "<cmd>buffer #<CR>", {
+    desc = "Previous buffer",
+})
+
+
+-- =============================================================================
+-- LSP
+-- =============================================================================
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+        local opts = {
+            buffer = args.buf,
+            silent = true,
+        }
+
+        map("n", "gd", vim.lsp.buf.definition, {
+            buffer = args.buf,
+            desc = "Go to definition",
+        })
+
+        map("n", "K", vim.lsp.buf.hover, {
+            buffer = args.buf,
+            desc = "Hover documentation",
+        })
+
+        map("n", "gl", vim.diagnostic.open_float, {
+            buffer = args.buf,
+            desc = "Line diagnostics",
+        })
+
+        map({ "n", "v" }, "ga", vim.lsp.buf.code_action, {
+            buffer = args.buf,
+            desc = "Code action",
+        })
+
+        map("n", "[d", vim.diagnostic.goto_prev, {
+            buffer = args.buf,
+            desc = "Previous diagnostic",
+        })
+
+        map("n", "]d", vim.diagnostic.goto_next, {
+            buffer = args.buf,
+            desc = "Next diagnostic",
+        })
+
+        map("n", "<leader>rn", vim.lsp.buf.rename, {
+            buffer = args.buf,
+            desc = "Rename symbol",
+        })
+
+        map("n", "<leader>ca", vim.lsp.buf.code_action, {
+            buffer = args.buf,
+            desc = "Code action",
+        })
+    end,
+})
+
+
+-- =============================================================================
+-- Diagnostics
+-- =============================================================================
+
+map("n", "<leader>xx", vim.diagnostic.setloclist, {
+    desc = "Diagnostics",
+})
+
+map("n", "<leader>xd", vim.diagnostic.open_float, {
+    desc = "Line diagnostics",
+})
+

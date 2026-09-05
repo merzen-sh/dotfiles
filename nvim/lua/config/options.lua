@@ -1,70 +1,123 @@
+-- =============================================================================
 -- OPTIONS
+-- =============================================================================
+
 local set = vim.opt
 
--- set.guicursor = "n-v-c-i:block"
 
---line nums
-set.relativenumber = true
+-- =============================================================================
+-- Line Numbers
+-- =============================================================================
+
 set.number = true
+set.relativenumber = true
 
---encoding
-set.encoding = "utf-8"
-set.fileencoding = "utf-8"
 
---editor
--- set.guifont = "JetBrainsMonoNerdFontMono:8,FiraCodeCodeNerdFont:h6"
+-- =============================================================================
+-- Indentation
+-- =============================================================================
 
--- indentation and tabs
 set.tabstop = 4
 set.shiftwidth = 4
-set.autoindent = true
-set.expandtab = true
+set.softtabstop = 4
 
--- search settings
+set.expandtab = true
+set.autoindent = true
+
+
+-- =============================================================================
+-- Search
+-- =============================================================================
+
 set.ignorecase = true
 set.smartcase = true
+set.incsearch = true
 
--- appearance
---set.termguicolors = false
--- set.background = "dark"
-set.fillchars:append({ eob = " " })
 
--- cursor line
+-- =============================================================================
+-- Appearance
+-- =============================================================================
+
 set.cursorline = true
 
--- command line height (1 for a small gap above statusline)
-set.cmdheight = 1
+-- Hide "~" on empty lines
+set.fillchars:append({
+    eob = " ",
+})
+
+-- Always reserve space for diagnostics/signs
+set.signcolumn = "yes"
+
+vim.api.nvim_set_hl(0, "SignColumn", {
+    bg = "none",
+})
 
 -- 80th column
 set.colorcolumn = "80"
 
--- clipboard
+
+-- =============================================================================
+-- Command Line
+-- =============================================================================
+
+set.cmdheight = 1
+
+
+-- =============================================================================
+-- Clipboard
+-- =============================================================================
+
 set.clipboard:append("unnamedplus")
 
--- backspace
-set.backspace = "indent,eol,start"
 
--- split windows
+-- =============================================================================
+-- Editing
+-- =============================================================================
+
+set.backspace = {
+    "indent",
+    "eol",
+    "start",
+}
+
+-- Treat "-" as part of a word
+set.iskeyword:append("-")
+
+
+-- =============================================================================
+-- Windows
+-- =============================================================================
+
 set.splitbelow = true
 set.splitright = true
 
--- dw/diw/ciw works on full-word
-set.iskeyword:append("-")
 
--- keep cursor at least 8 rows from top/bot
+-- =============================================================================
+-- Scrolling
+-- =============================================================================
+
 set.scrolloff = 8
+set.sidescrolloff = 8
 
--- incremental search
-set.incsearch = true
 
--- faster cursor hold
-set.updatetime = 50
+-- =============================================================================
+-- Performance
+-- =============================================================================
 
--- auto reload files changed on disk
+set.updatetime = 100
+
+
+-- =============================================================================
+-- Files
+-- =============================================================================
+
 set.autoread = true
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
-    command = "checktime",
-})
 
-vim.opt.signcolumn = "yes"
-vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
+vim.api.nvim_create_autocmd(
+    { "FocusGained", "BufEnter", "CursorHold" },
+    {
+        callback = function()
+            vim.cmd("checktime")
+        end,
+    }
+)

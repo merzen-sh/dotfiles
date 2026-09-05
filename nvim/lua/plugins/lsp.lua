@@ -1,14 +1,19 @@
 return {
+    -- =========================================================================
+    -- Mason
+    -- =========================================================================
     {
-        "williamboman/mason.nvim",
-        config = function()
-            require("mason").setup()
-        end,
+        "mason-org/mason.nvim",
+        opts = {},
     },
 
     {
-        "williamboman/mason-lspconfig.nvim",
-        dependencies = { "williamboman/mason.nvim" },
+        "mason-org/mason-lspconfig.nvim",
+        dependencies = {
+            "mason-org/mason.nvim",
+            "neovim/nvim-lspconfig",
+        },
+
         opts = {
             ensure_installed = {
                 "rust_analyzer",
@@ -20,7 +25,6 @@ return {
                 "marksman",
                 "yamlls",
                 "oxlint",
-                "eslint",
                 "emmet_ls",
                 "svelte",
                 "taplo",
@@ -28,62 +32,75 @@ return {
                 "pyright",
                 "jdtls",
             },
+
             automatic_installation = true,
         },
     },
 
+
+    -- =========================================================================
+    -- LSP Config
+    -- =========================================================================
+
     {
         "neovim/nvim-lspconfig",
-        dependencies = { "williamboman/mason-lspconfig.nvim" },
+
         config = function()
-            vim.api.nvim_create_autocmd("LspAttach", {
-                callback = function(args)
-                    local opts = { noremap = true, silent = true, buffer = args.buf }
-                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-                    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-                    vim.keymap.set("n", "gl", vim.diagnostic.open_float, opts)
-                    vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, opts)
-                    vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-                    vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-                end,
-            })
+            -- -----------------------------------------------------------------
+            -- Rust
+            -- -----------------------------------------------------------------
 
             vim.lsp.config("rust_analyzer", {
                 settings = {
                     ["rust-analyzer"] = {
-                        cargo = {
-                            defaultFeature = "dev",
-                            allFeatures = true,
-                        },
+                        -- cargo = {
+                        --     allFeatures = true,
+                        --     defaultFeature = "dev",
+                        -- },
                     },
                 },
             })
-            vim.lsp.enable("rust_analyzer")
+
+
+            -- -----------------------------------------------------------------
+            -- JSON
+            -- -----------------------------------------------------------------
 
             vim.lsp.config("jsonls", {
                 settings = {
                     json = {
-                        validate = { enable = true },
+                        validate = {
+                            enable = true,
+                        },
+
                         schemas = {
                             {
-                                fileMatch = { "package.json" },
+                                fileMatch = {
+                                    "package.json",
+                                },
+
                                 url = "https://json.schemastore.org/package",
                             },
                         },
                     },
                 },
             })
-            vim.lsp.enable("jsonls")
 
-            local other_servers = {
-                "ts_ls",
+
+            -- -----------------------------------------------------------------
+            -- Enable LSP servers
+            -- -----------------------------------------------------------------
+
+            local servers = {
+                "rust_analyzer",
+                "jsonls",
                 "html",
                 "cssls",
                 "tailwindcss",
+                "ts_ls",
                 "marksman",
                 "yamlls",
                 "oxlint",
-                "eslint",
                 "emmet_ls",
                 "svelte",
                 "taplo",
@@ -92,8 +109,8 @@ return {
                 "jdtls",
             }
 
-            for _, lsp in ipairs(other_servers) do
-                vim.lsp.enable(lsp)
+            for _, server in ipairs(servers) do
+                vim.lsp.enable(server)
             end
         end,
     },

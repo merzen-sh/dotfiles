@@ -1,18 +1,46 @@
 return {
-    { -- This helps with ssh tunneling and copying to clipboard
+    -- =========================================================================
+    -- Clipboard / OSC52
+    -- =========================================================================
+
+    {
         "ojroques/vim-oscyank",
+        event = "VeryLazy",
     },
-    { -- This generates docblocks
+
+
+    -- =========================================================================
+    -- Documentation
+    -- =========================================================================
+
+    {
         "kkoomen/vim-doge",
         build = ":call doge#install()",
+        cmd = {
+            "DogeGenerate",
+        },
     },
-    { -- Show historical versions of the file locally
+
+
+    -- =========================================================================
+    -- Undo History
+    -- =========================================================================
+
+    {
         "mbbill/undotree",
+        cmd = {
+            "UndotreeToggle",
+        },
     },
-    { -- Show CSS Colors
+
+
+    -- =========================================================================
+    -- CSS / Color Preview
+    -- =========================================================================
+
+    {
         "brenoprata10/nvim-highlight-colors",
-        config = function()
-            require("nvim-highlight-colors").setup({})
-        end,
+        event = "BufReadPost",
+        opts = {},
     },
 }
