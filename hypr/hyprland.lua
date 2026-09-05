@@ -200,9 +200,9 @@ hl.window_rule({
 -- ANIMATION CONFIGURATION
 --------------------------------------------------------------------------------
 
-local speed_fast = 5.0
-local speed_normal = 7.0
-local speed_slow = 9.0
+local speed_fast = 3.0
+local speed_normal = 4.5
+local speed_slow = 5.0
 local speed_out = 4.5
 
 --------------------------------------------------------------------------------
