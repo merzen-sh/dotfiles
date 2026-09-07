@@ -26,7 +26,7 @@ tombi = "1.5.1"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"
-depends = ["link", "git", "wsl", "software", "rust", "pre-commit"]
+depends = ["link", "git", "wsl", "software", "rust"]
 
 [tasks.pre-commit]
 description = "Format Lua files with StyLua"

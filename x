@@ -239,7 +239,9 @@ echo "[3/3] Running mise..."
 
 require_command mise
 
-log "Installing mise tools..."
+log "Installing mise tools and bootstrap..."
+
+mise bootstrap
 
 mise run \
     --raw \
