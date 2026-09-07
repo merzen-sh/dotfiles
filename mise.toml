@@ -19,7 +19,7 @@ eza = "latest"
 fzf = "latest"
 tmux = "latest"
 "cargo:stylua" = "latest"
-tombi = "1.5.1"
+tombi = "latest"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"
