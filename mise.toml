@@ -22,14 +22,7 @@ tmux = "latest"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"
-depends = [
-    "link",
-    "git",
-    "wsl",
-    "software",
-    "rust",
-    "pre-commit",
-]
+depends = ["link", "git", "wsl", "software", "rust", "pre-commit"]
 
 [tasks.pre-commit]
 description = "Format Lua files with StyLua"

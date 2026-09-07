@@ -55,6 +55,16 @@ return {
         },
 
         {
+            "<leader>fw",
+            function()
+                require("telescope.builtin").grep_string({
+                    search = vim.fn.expand("<cword>"),
+                })
+            end,
+            desc = "Grep word under cursor",
+        },
+
+        {
             "<leader>fc",
             function()
                 local filename = vim.fn.expand("%:t:r")
