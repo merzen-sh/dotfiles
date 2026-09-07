@@ -164,7 +164,7 @@ polkit_placement = "attached"
 [theme]
 community_palette = "Vesper"
 custom_palette = "everforest-wallpapers-for-arch-linux-by-deviantarchuser-dhl7jc5-pre-vib"
-source = "wallpaper"
+source = "community"
 wallpaper_scheme = "vibrant"
 
 [theme.templates]

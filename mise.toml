@@ -1,13 +1,19 @@
 [vars]
-DOTFILES_DIR = "{{config_root}}"
+DOTFILES_DIR = "{{config_root}}/dotfiles"
+
+[bootstrap.packages]
+"pacman:starship" = "latest"
+"pacman:lazygit" = "latest"
+"pacman:github-cli" = "latest"
+"pacman:neovim" = "latest"
+"pacman:btop" = "latest"
+"pacman:zoxide" = "latest"
+"pacman:eza" = "latest"
+"pacman:fzf" = "latest"
+"pacman:tmux" = "latest"
+"pacman:tombi" = "latest"
 
 [tools]
-starship = "latest"
-lazygit = "latest"
-github-cli = "latest"
-neovim = "latest"
-btop = "latest"
-zoxide = "latest"
 go = "latest"
 rust = "latest"
 uv = "latest"
@@ -15,11 +21,8 @@ ruff = "latest"
 bun = "latest"
 node = "lts"
 pnpm = "latest"
-eza = "latest"
-fzf = "latest"
-tmux = "latest"
 "cargo:stylua" = "latest"
-tombi = "latest"
+tombi = "1.5.1"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"
@@ -27,7 +30,7 @@ depends = ["link", "git", "wsl", "software", "rust", "pre-commit"]
 
 [tasks.pre-commit]
 description = "Format Lua files with StyLua"
-run = "stylua ."
+run = "stylua {{ vars.DOTFILES_DIR }} && tombi format {{ vars.DOTFILES_DIR }}"
 
 [tasks.systemd]
 depends = ["systemd"]
