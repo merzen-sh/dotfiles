@@ -1,5 +1,5 @@
 [vars]
-DOTFILES_DIR = '{{config_root}}'
+DOTFILES_DIR = "{{config_root}}"
 
 [tools]
 starship = "latest"
@@ -19,6 +19,7 @@ eza = "latest"
 fzf = "latest"
 tmux = "latest"
 "cargo:stylua" = "latest"
+tombi = "1.5.1"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"

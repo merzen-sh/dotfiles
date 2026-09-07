@@ -5,7 +5,7 @@ command_timeout = 500
 format = "[$symbol$version]($style) "
 symbol = ""
 style = "bold cyan"
-disabled = true 
+disabled = true
 
 [nodejs]
 format = "[$symbol$version]($style) "
@@ -55,7 +55,7 @@ version_format = "${raw}"
 format = "[$path]($style)[$read_only]($read_only_style) "
 style = "cyan"
 truncation_length = 2
-truncate_to_repo = false 
+truncate_to_repo = false
 truncation_symbol = "~/../"
 home_symbol = "~"
 
@@ -79,40 +79,40 @@ error_symbol = "[\uf105](red)"
 
 [palettes.noctalia]
 # Standard colors
-blue      = "#66bdcc"
-red       = "#fd4663"
-green     = "#afe467"
-yellow    = "#63d65c"
-cyan      = "#9be996"
-magenta   = "#c6ec93"
-white     = "#f2f3f2"
-black     = "#2a3022"
+blue = "#66bdcc"
+red = "#fd4663"
+green = "#afe467"
+yellow = "#63d65c"
+cyan = "#9be996"
+magenta = "#c6ec93"
+white = "#f2f3f2"
+black = "#2a3022"
 
 # Extended palette (Catppuccin-compatible names)
 rosewater = "#63d65c"
-flamingo  = "#fd4663"
-pink      = "#c6ec93"
-mauve     = "#c6ec93"
-maroon    = "#fd4663"
-peach     = "#63d65c"
-teal      = "#9be996"
-sky       = "#9be996"
-sapphire  = "#66bdcc"
-lavender  = "#c6ec93"
+flamingo = "#fd4663"
+pink = "#c6ec93"
+mauve = "#c6ec93"
+maroon = "#fd4663"
+peach = "#63d65c"
+teal = "#9be996"
+sky = "#9be996"
+sapphire = "#66bdcc"
+lavender = "#c6ec93"
 
 # Text shades
-text      = "#f2f3f2"
-subtext1  = "#f2f3f2"
-subtext0  = "#686e5e"
+text = "#f2f3f2"
+subtext1 = "#f2f3f2"
+subtext0 = "#686e5e"
 
 # Surface shades
-overlay2  = "#686e5e"
-overlay1  = "#686e5e"
-overlay0  = "#2a3022"
-surface2  = "#2a3022"
-surface1  = "#2a3022"
-surface0  = "#1f2419"
-base      = "#1f2419"
-mantle    = "#1f2419"
-crust     = "#1f2419"
+overlay2 = "#686e5e"
+overlay1 = "#686e5e"
+overlay0 = "#2a3022"
+surface2 = "#2a3022"
+surface1 = "#2a3022"
+surface0 = "#1f2419"
+base = "#1f2419"
+mantle = "#1f2419"
+crust = "#1f2419"
 # <<< NOCTALIA STARSHIP PALETTE <<<
