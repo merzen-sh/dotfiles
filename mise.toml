@@ -22,6 +22,7 @@ bun = "latest"
 node = "lts"
 pnpm = "latest"
 tombi = "latest"
+watchexec = "latest"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"
