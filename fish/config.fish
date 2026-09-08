@@ -18,7 +18,7 @@ set -gx RUSTC_WRAPPER sccache
 
 if status is-interactive
     # fastfetch
-    # echo "merzen-sh@arch"
+    echo "arch@linux"
 end
 
 export QT_QPA_PLATFORMTHEME=qt6ct
@@ -30,6 +30,7 @@ fish_add_path $HOME/.bun/bin
 fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cache/.bun/bin
+fish_add_path $HOME/.opencode/bin
 
 set --export PATH $BUN_INSTALL/bin $PATH
 

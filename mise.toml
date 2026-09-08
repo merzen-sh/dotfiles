@@ -21,7 +21,6 @@ ruff = "latest"
 bun = "latest"
 node = "lts"
 pnpm = "latest"
-"cargo:stylua" = "latest"
 tombi = "latest"
 
 [tasks.install]
