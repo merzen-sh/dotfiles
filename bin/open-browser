@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+url="${1:-about:blank}"
+
+browser="$(xdg-settings get default-web-browser)"
+
+case "$browser" in
+    *.desktop)
+        exec gtk-launch "$browser" "$url"
+        ;;
+    *)
+        exec xdg-open "$url"
+        ;;
+esac

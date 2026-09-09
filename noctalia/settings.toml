@@ -176,16 +176,16 @@ directory = "~/"
 fill_mode = "stretch"
 
 [wallpaper.default]
-path = "/home/mark/everforest_wallpapers_for_arch_linux__by_deviantarchuser_dhl7jc5-pre.jpg"
+path = "/home/mark/Wallpapers/others/0583.jpg"
 
 [wallpaper.last]
-path = "/home/mark/everforest_wallpapers_for_arch_linux__by_deviantarchuser_dhl7jc5-pre.jpg"
+path = "/home/mark/Wallpapers/others/0583.jpg"
 
 [wallpaper.monitors.DP-1]
-path = "/home/mark/everforest_wallpapers_for_arch_linux__by_deviantarchuser_dhl7jc5-pre.jpg"
+path = "/home/mark/Wallpapers/others/0583.jpg"
 
 [wallpaper.monitors.HDMI-A-1]
-path = "/home/mark/everforest_wallpapers_for_arch_linux__by_deviantarchuser_dhl7jc5-pre.jpg"
+path = "/home/mark/Wallpapers/others/0583.jpg"
 
 [widget.launcher]
 glyph = "category-filled"
