@@ -873,6 +873,5 @@ hl.window_rule({
 ---- NOCTALIA THEME ----
 -----------------------
 
-
 -- For Noctalia Color templates
 require("noctalia").apply_theme()
