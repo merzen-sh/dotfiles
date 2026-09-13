@@ -121,21 +121,21 @@ hl.env("HYPRCURSOR_SIZE", "24")
 
 hl.config({
     general = {
-        gaps_in = 3,
+        gaps_in = 2,
         gaps_out = 4,
         border_size = 1,
     },
 
     decoration = {
-        rounding = 8,
+        rounding = 4,
         rounding_power = 2,
 
-        active_opacity = 0.94,
-        inactive_opacity = 0.90,
-        fullscreen_opacity = 1.0,
+        active_opacity = 0.7,
+        inactive_opacity = 0.75,
+        fullscreen_opacity = 0.6,
 
         shadow = {
-            enabled = true,
+            enabled = false,
             range = 8,
             render_power = 3,
         },
@@ -194,6 +194,15 @@ hl.window_rule({
     },
     float = true,
     size = { 1080, 820 },
+})
+
+hl.window_rule({
+    name = "no-opacity",
+    match = {
+        class = "^(google-chrome|Waydroid|org.vinegarhq.Sober)$",
+    },
+    opacity = "1.0 override 1.0 override 1.0 override",
+    opaque = true,
 })
 
 --------------------------------------------------------------------------------
@@ -715,12 +724,12 @@ end
 ---- SPECIAL WORKSPACE ----
 -----------------------
 
-hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic:1"))
 
 hl.bind(
     mainMod .. " + SHIFT + S",
     hl.dsp.window.move({
-        workspace = "special:magic",
+        workspace = "special:magic:1",
     })
 )
 
