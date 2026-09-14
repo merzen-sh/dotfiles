@@ -748,11 +748,11 @@ local function toggle_scratchpad(workspace, app, width, height)
 end
 
 hl.bind(mainMod .. " + W", function()
-    toggle_scratchpad("magic:terminal", terminal .. " --hold fish -c zi", "0.55", "0.60")
+    toggle_scratchpad("magic:terminal", terminal .. " --hold $SHELL -c zi", "0.55", "0.60")
 end)
 
 hl.bind(mainMod .. " + M", function()
-    toggle_scratchpad("magic:monitor", terminal .. " --hold fish -c btop", "0.55", "0.60")
+    toggle_scratchpad("magic:monitor", terminal .. " --hold $SHELL -c btop", "0.55", "0.60")
 end)
 -----------------------
 ---- WORKSPACE SCROLL ----
