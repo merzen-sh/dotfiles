@@ -23,7 +23,6 @@ node = "lts"
 pnpm = "latest"
 tombi = "latest"
 watchexec = "latest"
-python = "latest"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"

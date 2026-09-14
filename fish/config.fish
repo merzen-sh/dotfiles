@@ -1,24 +1,20 @@
 # ==== sources ==== #
 
-source (dirname (status filename))/functions/alias_cmd.fish
-source (dirname (status filename))/functions/zoxide.fish
+set -l dotfiles "$HOME/dotfiles"
+
+source "$dotfiles/fish/functions/alias_cmd.fish"
+source "$dotfiles/fish/functions/zoxide.fish"
+source "$dotfiles/fzf/themes/noctalia.fish"
 
 set -U fish_greeting ""
 # ==== env variables ==== #
 
-set -gx FZF_DEFAULT_OPTS_FILE "$HOME/.config/fzf/fzfrc"
-
-set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --exclude .git'
-
-set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
-
-set -gx RUSTC_WRAPPER sccache
+set -gx RUSTC_WRAPPER kache
 
 # ==== greeting ==== #
 
 if status is-interactive
     # fastfetch
-    echo "arch@linux"
 end
 
 export QT_QPA_PLATFORMTHEME=qt6ct
@@ -31,8 +27,6 @@ fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cache/.bun/bin
 fish_add_path $HOME/.opencode/bin
-
-set --export PATH $BUN_INSTALL/bin $PATH
 
 # starship
 starship init fish | source

@@ -1,7 +1,7 @@
 config_version = 14
 
 [bar.default]
-background_opacity = 0.79999998211860657
+background_opacity = 0.69999998435378075
 center = [ "group:g3", "group:g2", "group:g1" ]
 end = [ "group:g5", "group:g6", "group:g4" ]
 margin_edge = 4
@@ -18,7 +18,7 @@ start = [ "launcher", "wallpaper", "workspaces", "group:g7" ]
     id = "g1"
     members = [ "cpu", "ram" ]
     opacity = 1.0
-    padding = 15.0
+    padding = 0.0
 
     [[bar.default.capsule_group]]
     accordion = false
@@ -38,7 +38,7 @@ start = [ "launcher", "wallpaper", "workspaces", "group:g7" ]
     id = "g3"
     members = [ "clock", "weather" ]
     opacity = 1.0
-    padding = 15.0
+    padding = 0.0
 
     [[bar.default.capsule_group]]
     accordion = false
@@ -48,7 +48,7 @@ start = [ "launcher", "wallpaper", "workspaces", "group:g7" ]
     id = "g4"
     members = [ "control-center", "session" ]
     opacity = 1.0
-    padding = 15.0
+    padding = 0.0
 
     [[bar.default.capsule_group]]
     accordion = false
@@ -58,7 +58,7 @@ start = [ "launcher", "wallpaper", "workspaces", "group:g7" ]
     id = "g5"
     members = [ "clipboard", "notifications", "tray" ]
     opacity = 1.0
-    padding = 15.0
+    padding = 0.0
 
     [[bar.default.capsule_group]]
     accordion = false
@@ -78,7 +78,7 @@ start = [ "launcher", "wallpaper", "workspaces", "group:g7" ]
     id = "g7"
     members = [ "media" ]
     opacity = 1.0
-    padding = 15.0
+    padding = 0.0
 
 [calendar.account.personal_google]
 type = "google"
@@ -100,6 +100,7 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
     box_width = 832.0
     cx = 960.0
     cy = 540.0
+    enabled = false
     output = "HDMI-A-1"
     placement_height = 1080.0
     placement_width = 1920.0
@@ -217,6 +218,45 @@ font_family = "Cascadia Mono"
     clipboard_placement = "attached"
     launcher_placement = "attached"
     polkit_placement = "attached"
+    transparency_mode = "glass"
+
+    [shell.screenshot]
+    show_cursor = true
+
+    [[shell.session.actions]]
+    action = "lock"
+    countdown_seconds = 0.0
+    enabled = false
+    shortcut = "1"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "logout"
+    countdown_seconds = 0.0
+    enabled = false
+    shortcut = "2"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "lock_and_suspend"
+    countdown_seconds = 0.0
+    enabled = false
+    shortcut = "3"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "reboot"
+    countdown_seconds = 0.0
+    enabled = false
+    shortcut = "4"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "shutdown"
+    countdown_seconds = 0.0
+    enabled = false
+    shortcut = "5"
+    variant = "destructive"
 
 [theme]
 community_palette = "Vesper"
@@ -233,6 +273,7 @@ wallpaper_scheme = "vibrant"
         "pi-agent",
         "discord",
         "neovim",
+        "obsidian",
         "vscode",
         "zed",
         "prismlauncher",
@@ -240,28 +281,30 @@ wallpaper_scheme = "vibrant"
         "obs",
         "bat",
         "fzf",
-        "lazygit",
-        "tmux"
+        "lazygit"
     ]
 
 [wallpaper]
-directory = "~/"
+directory = "/home/mark/Wallpapers"
 fill_mode = "stretch"
 
     [wallpaper.default]
-    path = "/home/mark/Wallpapers/others/0583.jpg"
+    path = "/home/mark/Wallpapers/nord/an_astronaut_in_space_with_a_satellite.png"
 
     [wallpaper.last]
-    path = "/home/mark/Wallpapers/others/0583.jpg"
+    path = "/home/mark/Wallpapers/nord/an_astronaut_in_space_with_a_satellite.png"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/mark/Wallpapers/others/0583.jpg"
+    path = "/home/mark/Wallpapers/nord/an_astronaut_in_space_with_a_satellite.png"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mark/Wallpapers/others/0583.jpg"
+    path = "/home/mark/Wallpapers/nord/an_astronaut_in_space_with_a_satellite.png"
 
 [widget.launcher]
 glyph = "category-filled"
+
+[widget.media]
+enabled = false
 
 [widget.tray]
 drawer = true
