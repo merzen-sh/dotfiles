@@ -5,7 +5,6 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
 
 hl.monitor({
-
     output = "DP-1",
     mode = "preferred",
     position = "0x375",
@@ -114,9 +113,9 @@ hl.config({
         rounding = 4,
         rounding_power = 2,
 
-        active_opacity = 0.7,
-        inactive_opacity = 0.75,
-        fullscreen_opacity = 0.6,
+        active_opacity = 0.8,
+        inactive_opacity = 0.85,
+        fullscreen_opacity = 1.0,
 
         shadow = {
             enabled = false,
@@ -735,11 +734,6 @@ local function toggle_scratchpad(workspace, app, width, height)
     if #windows == 0 then
         hl.exec_cmd(app, {
             workspace = "special:" .. workspace,
-            float = true,
-            size = {
-                "(monitor_w*" .. width .. ")",
-                "(monitor_h*" .. height .. ")",
-            },
             center = true,
         })
     else
@@ -748,12 +742,9 @@ local function toggle_scratchpad(workspace, app, width, height)
 end
 
 hl.bind(mainMod .. " + W", function()
-    toggle_scratchpad("magic:terminal", terminal .. " --hold $SHELL -c zi", "0.55", "0.60")
+    toggle_scratchpad("magic:terminal", terminal, "0.55", "0.60")
 end)
 
-hl.bind(mainMod .. " + M", function()
-    toggle_scratchpad("magic:monitor", terminal .. " --hold $SHELL -c btop", "0.55", "0.60")
-end)
 -----------------------
 ---- WORKSPACE SCROLL ----
 -----------------------

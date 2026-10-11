@@ -23,6 +23,9 @@ node = "lts"
 pnpm = "latest"
 tombi = "latest"
 watchexec = "latest"
+codex = "latest"
+claude-code = "latest"
+stylua = "latest"
 
 [tasks.install]
 description = "Install and configure the dotfiles environment"

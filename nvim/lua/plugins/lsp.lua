@@ -31,6 +31,7 @@ return {
                 "clangd",
                 "pyright",
                 "jdtls",
+                "svelte"
             },
 
             automatic_installation = true,
@@ -104,6 +105,7 @@ return {
                 "clangd",
                 "pyright",
                 "jdtls",
+                "svelte"
             }
 
             for _, server in ipairs(servers) do

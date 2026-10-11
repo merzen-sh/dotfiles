@@ -27,8 +27,12 @@ fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin
 fish_add_path $HOME/.cache/.bun/bin
 fish_add_path $HOME/.opencode/bin
+fish_add_path $HOME/dotfiles/bin
 
 # starship
 starship init fish | source
 export PATH="$HOME/.local/bin:$PATH"
 mise activate fish | source
+
+# opencode
+fish_add_path /home/mark/.opencode/bin
