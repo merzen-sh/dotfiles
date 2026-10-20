@@ -35,4 +35,5 @@ export PATH="$HOME/.local/bin:$PATH"
 mise activate fish | source
 
 # opencode
-fish_add_path /home/mark/.opencode/bin
+fish_add_path $HOME/.opencode/bin
+fish_add_path $HOME/.luarocks/bin

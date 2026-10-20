@@ -188,6 +188,16 @@ hl.window_rule({
     opaque = true,
 })
 
+hl.window_rule({
+    name = "m-no-opacity",
+    match = {
+        class = "^(steam_app_2676230|steam_app_3463014968)$",
+    },
+    opacity = "1.0 override 1.0 override 1.0 override",
+    opaque = true,
+    no_blur = true,
+})
+
 --------------------------------------------------------------------------------
 -- ANIMATION CONFIGURATION
 --------------------------------------------------------------------------------
@@ -605,6 +615,7 @@ hl.bind(mainMod .. " + SHIFT + TAB", hl.dsp.exec_cmd(noctalia_ipc .. "panel-togg
 
 -- hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(noctalia_ipc .. "desktop-widgets-toggle-edit"))
 
+hl.bind(mainMod .. " + CTRL + M", hl.dsp.exit())
 -----------------------
 ---- FOCUS ----
 -----------------------
@@ -893,6 +904,7 @@ hl.window_rule({
 -----------------------
 ---- NOCTALIA THEME ----
 -----------------------
+
 
 -- For Noctalia Color templates
 require("noctalia").apply_theme()
