@@ -18,6 +18,13 @@ hl.monitor({
     scale = "1",
 })
 
+hl.config({
+    render = {
+        -- Fixes black screen issues on full screen caused by Color Management in v0.57+
+        cm_auto_hdr = 0,
+    },
+})
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------

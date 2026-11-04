@@ -1,15 +1,53 @@
-config_version = 15
+config_version = 16
 
 [bar.default]
-background_opacity = 0.79999998211860657
+background_opacity = 0.4999999888241291
 center = [ "clock", "cpu", "ram", "network_rx", "network_tx" ]
 font_family = "Adwaita Mono"
 margin_edge = 3
 margin_ends = 3
 padding = 10
-radius = 4
+radius = 7
 shadow = false
-start = [ "launcher", "wallpaper", "workspaces", "audio_visualizer" ]
+start = [ "launcher", "wallpaper", "workspaces", "audio_visualizer", "active_window" ]
+
+[desktop_widgets]
+schema_version = 2
+widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000003" ]
+
+    [desktop_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000001]
+    box_height = 225.04296875
+    box_width = 421.69140625
+    cx = 1693.154296875
+    cy = 171.478515625
+    output = "HDMI-A-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "clock"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000001.settings]
+        background = false
+
+    [desktop_widgets.widget.desktop-widget-0000000000000003]
+    box_height = 771.203125
+    box_width = 1019.521484375
+    cx = 946.2392578125
+    cy = 540.0
+    output = "HDMI-A-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "fancy_audio_visualizer"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000003.settings]
+        background = false
+        visualization_mode = "all"
 
 [location]
 auto_locate = true
@@ -36,7 +74,7 @@ widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@HDMI-A-1" ]
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -64,7 +102,7 @@ widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@HDMI-A-1" ]
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -82,9 +120,11 @@ widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@HDMI-A-1" ]
 
 [shell.launcher]
 category_icons_only = true
+compact = true
 search_position = "top"
 
 [shell.panel]
+border_width = 0.0
 launcher_placement = "attached"
 
 [[shell.session.actions]]
@@ -125,7 +165,6 @@ variant = "destructive"
 [theme]
 community_palette = "Vesper"
 mode = "dark"
-pure_black_dark = true
 source = "community"
 wallpaper_scheme = "m3-content"
 
@@ -142,26 +181,40 @@ wallpaper_scheme = "m3-content"
         "obs",
         "bat",
         "fzf",
-        "lazygit"
+        "lazygit",
+        "tmux"
     ]
 
 [wallpaper]
 directory = "/home/mark/Wallpapers"
 
     [wallpaper.default]
-    path = "/home/mark/Wallpapers/digital/a_car_in_a_field_with_trees_and_a_fire.png"
+    path = "/home/mark/Wallpapers/monochrome/b-067.jpg"
 
     [wallpaper.last]
-    path = "/home/mark/Wallpapers/digital/a_car_in_a_field_with_trees_and_a_fire.png"
+    path = "/home/mark/Wallpapers/monochrome/b-067.jpg"
 
     [wallpaper.monitors.DP-1]
-    path = "/home/mark/Wallpapers/digital/a_car_in_a_field_with_trees_and_a_fire.png"
+    path = "/home/mark/Wallpapers/monochrome/b-067.jpg"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/mark/Wallpapers/digital/a_car_in_a_field_with_trees_and_a_fire.png"
+    path = "/home/mark/Wallpapers/monochrome/b-067.jpg"
+
+[widget.audio_visualizer]
+enabled = false
 
 [widget.launcher]
 glyph = "apps-filled"
 
 [widget.media]
 enabled = false
+
+[widget.network]
+show_label = false
+
+[widget.tray]
+drawer = true
+
+[widget.workspaces]
+active_pill_size = 1.2
+inactive_pill_size = 1.2
