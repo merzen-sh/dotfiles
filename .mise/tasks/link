@@ -10,117 +10,76 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Literal
 
 
 # =============================================================================
-# CONSTANTS
+# CONSTANTS / ENVIRONMENT
 # =============================================================================
 
 BACKUP_DIR_NAME = ".dotfiles-backups"
 
-# =============================================================================
-# ENVIRONMENT
-# =============================================================================
 
 def is_wsl_environment() -> bool:
-    """Return True when running inside WSL."""
-    proc_version = Path("/proc/version")
+    if os.environ.get("WSL_INTEROP"):
+        return True
 
-    if not proc_version.exists():
-        return False
+    for proc_file in (Path("/proc/sys/kernel/osrelease"), Path("/proc/version")):
+        try:
+            contents = proc_file.read_text(encoding="utf-8", errors="ignore").lower()
+        except OSError:
+            continue
 
-    try:
-        return "microsoft" in proc_version.read_text(
-            encoding="utf-8",
-            errors="ignore",
-        ).lower()
-    except OSError:
-        return False
+        if "microsoft" in contents or "wsl" in contents:
+            return True
+
+    return False
 
 
 IS_WSL_ENVIRONMENT = is_wsl_environment()
-
-ACTIVE_DESKTOP_ENV = os.environ.get(
-    "DOTFILES_DESKTOP",
-    os.environ.get("XDG_CURRENT_DESKTOP", ""),
-).lower().strip()
-
-DOTFILES_DIR_PATH = Path(
-    os.environ.get("DOTFILES_DIR", Path.cwd())
-).expanduser().resolve()
-
+ACTIVE_DESKTOP_ENV = (
+    os.environ.get("DOTFILES_DESKTOP")
+    or os.environ.get("XDG_CURRENT_DESKTOP")
+    or os.environ.get("XDG_SESSION_DESKTOP")
+    or ""
+).split(":", maxsplit=1)[0].strip().lower()
+DOTFILES_DIR_PATH = Path(os.environ.get("DOTFILES_DIR", Path.cwd())).expanduser().resolve()
 USER_HOME_DIR = Path.home()
-
-
-# =============================================================================
-# DATA MODELS
-# =============================================================================
-
-@dataclass(frozen=True)
-class SymlinkTarget:
-    """Description of a dotfiles symlink target."""
-
-    source_relative_path: str
-    target_absolute_path: Path
-    is_gui_only: bool = False
-    requires_sudo: bool = False
-
-
-@dataclass
-class RuntimeOptions:
-    """CLI/runtime configuration."""
-
-    dry_run: bool = False
-    verbose: bool = False
-    backup: bool = True
 
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
 
-USER_CONFIG_MAPPINGS: list[SymlinkTarget] = [
-    # Shell / CLI
-    SymlinkTarget(
-        ".tmux.conf",
-        USER_HOME_DIR / ".tmux.conf",
-    ),
-    SymlinkTarget(
-        ".vimrc",
-        USER_HOME_DIR / ".vimrc",
-    ),
-    SymlinkTarget(
-        "starship.toml",
-        USER_HOME_DIR / ".config" / "starship.toml",
-    ),
-    SymlinkTarget(
-        "fish",
-        USER_HOME_DIR / ".config" / "fish",
-    ),
-    SymlinkTarget(
-        "fastfetch",
-        USER_HOME_DIR / ".config" / "fastfetch",
-    ),
-    SymlinkTarget(
-        "nvim",
-        USER_HOME_DIR / ".config" / "nvim",
-    ),
-    SymlinkTarget(
-        "fzf",
-        USER_HOME_DIR / ".config" / "fzf",
-    ),
+@dataclass(frozen=True)
+class SymlinkTarget:
+    source_relative_path: str
+    target_absolute_path: Path
+    is_gui_only: bool = False
+    requires_sudo: bool = False
 
+
+@dataclass(frozen=True)
+class RuntimeOptions:
+    dry_run: bool = False
+    verbose: bool = False
+    backup: bool = True
+
+
+MappingResult = Literal["success", "skipped", "failed"]
+
+USER_CONFIG_MAPPINGS = [
+    # Shell / CLI
+    SymlinkTarget(".tmux.conf", USER_HOME_DIR / ".tmux.conf"),
+    SymlinkTarget(".vimrc", USER_HOME_DIR / ".vimrc"),
+    SymlinkTarget("starship.toml", USER_HOME_DIR / ".config" / "starship.toml"),
+    SymlinkTarget("fish", USER_HOME_DIR / ".config" / "fish"),
+    SymlinkTarget("fastfetch", USER_HOME_DIR / ".config" / "fastfetch"),
+    SymlinkTarget("nvim", USER_HOME_DIR / ".config" / "nvim"),
+    SymlinkTarget("fzf", USER_HOME_DIR / ".config" / "fzf"),
     # GUI
-    SymlinkTarget(
-        "ghostty",
-        USER_HOME_DIR / ".config" / "ghostty",
-        is_gui_only=True,
-    ),
-    SymlinkTarget(
-        "kitty",
-        USER_HOME_DIR / ".config" / "kitty",
-        is_gui_only=True,
-    ),
+    SymlinkTarget("ghostty", USER_HOME_DIR / ".config" / "ghostty", is_gui_only=True),
+    SymlinkTarget("kitty", USER_HOME_DIR / ".config" / "kitty", is_gui_only=True),
     SymlinkTarget(
         "noctalia",
         USER_HOME_DIR / ".local" / "state" / "noctalia",
@@ -128,17 +87,15 @@ USER_CONFIG_MAPPINGS: list[SymlinkTarget] = [
     ),
 ]
 
-
 DESKTOP_CONFIG_NAMES = {
     "hyprland": "hypr",
     "niri": "niri",
 }
 
-
-SYSTEM_CONFIG_MAPPINGS: list[SymlinkTarget] = [
+SYSTEM_CONFIG_MAPPINGS = [
     SymlinkTarget(
-        source_relative_path="etc/keyd/default.conf",
-        target_absolute_path=Path("/etc/keyd/default.conf"),
+        "etc/keyd/default.conf",
+        Path("/etc/keyd/default.conf"),
         is_gui_only=True,
         requires_sudo=True,
     ),
@@ -150,9 +107,7 @@ SYSTEM_CONFIG_MAPPINGS: list[SymlinkTarget] = [
 # =============================================================================
 
 class Logger:
-    """Small dependency-free logger."""
-
-    def __init__(self, verbose: bool = False):
+    def __init__(self, verbose: bool = False) -> None:
         self.verbose_enabled = verbose
 
     @staticmethod
@@ -181,345 +136,194 @@ class Logger:
 # =============================================================================
 
 def path_exists(path: Path) -> bool:
-    """
-    Like Path.exists(), but also returns True for broken symlinks.
-    """
+    """Path.exists() also returns True for dangling symlinks."""
     return path.exists() or path.is_symlink()
 
 
-def describe_path(path: Path) -> str:
-    """Return a useful description of a filesystem path."""
-    if path.is_symlink():
-        try:
-            return f"symlink -> {path.readlink()}"
-        except OSError:
-            return "broken/unreadable symlink"
-
-    if path.is_dir():
-        return "directory"
-
-    if path.is_file():
-        return "file"
-
-    if path.exists():
-        return "filesystem object"
-
-    return "missing"
-
-
-def paths_are_same_symlink(
-    target: Path,
-    source: Path,
-) -> bool:
-    """Return True when target is already a symlink to source."""
+def paths_are_same_symlink(target: Path, source: Path) -> bool:
     if not target.is_symlink():
         return False
 
     try:
-        target_destination = target.readlink()
-
-        if not target_destination.is_absolute():
-            target_destination = target.parent / target_destination
-
-        return target_destination.resolve() == source.resolve()
-
+        return target.resolve() == source.resolve()
     except OSError:
         return False
 
 
-def create_backup_directory(
-    backup_root: Path,
-    options: RuntimeOptions,
-    logger: Logger,
-) -> Path:
-    """
-    Create a timestamped backup directory.
-
-    Example:
-        ~/.dotfiles-backups/2026-09-05_170000/
-    """
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-    backup_dir = backup_root / timestamp
-
-    if options.dry_run:
-        logger.debug(f"Would create backup directory: {backup_dir}")
-        return backup_dir
-
-    backup_dir.mkdir(parents=True, exist_ok=False)
-
-    logger.debug(f"Created backup directory: {backup_dir}")
-
-    return backup_dir
+def run_sudo(command: list[str], options: RuntimeOptions, logger: Logger) -> None:
+    logger.debug("sudo " + " ".join(command))
+    if not options.dry_run:
+        subprocess.run(["sudo", *command], check=True)
 
 
-def backup_existing_target(
+def ensure_parent_directory(
     target: Path,
-    backup_dir: Path,
-    options: RuntimeOptions,
-    logger: Logger,
-) -> Path | None:
-    """
-    Move an existing target into the backup directory.
-
-    This preserves files/directories/symlinks before replacement.
-    """
-    if not path_exists(target):
-        return None
-
-    backup_path = backup_dir / target.name
-
-    # Avoid collisions inside backup directory.
-    counter = 1
-
-    while path_exists(backup_path):
-        backup_path = backup_dir / f"{target.name}.{counter}"
-        counter += 1
-
-    logger.info(
-        f"Backup: {target} -> {backup_path}"
-    )
-
-    if options.dry_run:
-        return backup_path
-
-    backup_dir.mkdir(parents=True, exist_ok=True)
-
-    shutil.move(
-        str(target),
-        str(backup_path),
-    )
-
-    return backup_path
-
-
-def remove_path(
-    path: Path,
+    *,
+    requires_sudo: bool,
     options: RuntimeOptions,
     logger: Logger,
 ) -> None:
-    """
-    Safely remove a filesystem object.
+    parent = target.parent
 
-    Handles:
-    - regular files
-    - directories
-    - symlinks
-    - broken symlinks
-    """
+    if requires_sudo:
+        run_sudo(["mkdir", "-p", "--", str(parent)], options, logger)
+        return
+
+    if parent.exists():
+        if not parent.is_dir():
+            raise RuntimeError(f"Target parent is not a directory: {parent}")
+        return
+
+    logger.debug(f"Creating directory: {parent}")
+    if not options.dry_run:
+        parent.mkdir(parents=True, exist_ok=True)
+
+
+def remove_path(path: Path, options: RuntimeOptions, logger: Logger) -> None:
     if not path_exists(path):
         return
 
-    logger.debug(
-        f"Removing {path} ({describe_path(path)})"
-    )
+    kind = "symlink" if path.is_symlink() else "directory" if path.is_dir() else "file"
+    logger.info(f"Remove: {path} ({kind})")
 
     if options.dry_run:
         return
 
     if path.is_symlink() or path.is_file():
         path.unlink()
-        return
-
-    if path.is_dir():
+    elif path.is_dir():
         shutil.rmtree(path)
-        return
-
-    raise RuntimeError(
-        f"Unsupported filesystem object: {path}"
-    )
+    else:
+        raise RuntimeError(f"Unsupported filesystem object: {path}")
 
 
-def ensure_parent_directory(
+# =============================================================================
+# BACKUP / RESTORE
+# =============================================================================
+
+def backup_existing_target(
     target: Path,
+    backup_root: Path,
+    *,
+    requires_sudo: bool,
     options: RuntimeOptions,
     logger: Logger,
-) -> None:
-    """Ensure target parent directory exists."""
-    parent = target.parent
-
-    if parent.exists():
-        if not parent.is_dir():
-            raise RuntimeError(
-                f"Target parent is not a directory: {parent}"
-            )
-        return
-
-    logger.debug(f"Creating directory: {parent}")
+    reserved_paths: set[Path],
+) -> Path:
+    """Move an existing target into a timestamped backup directory."""
+    backup_dir = backup_root / "system" if requires_sudo else backup_root
 
     if not options.dry_run:
-        parent.mkdir(parents=True, exist_ok=True)
+        backup_dir.mkdir(parents=True, exist_ok=True)
+
+    backup_path = backup_dir / target.name
+    suffix = 1
+
+    while path_exists(backup_path) or backup_path in reserved_paths:
+        backup_path = backup_dir / f"{target.name}.{suffix}"
+        suffix += 1
+
+    reserved_paths.add(backup_path)
+    logger.info(f"Backup: {target} -> {backup_path}")
+
+    if not options.dry_run:
+        if requires_sudo:
+            run_sudo(["mv", "--", str(target), str(backup_path)], options, logger)
+        else:
+            shutil.move(str(target), str(backup_path))
+
+    return backup_path
 
 
-# =============================================================================
-# USER SYMLINKS
-# =============================================================================
-
-def process_user_symlink(
-    source: Path,
+def restore_backup(
+    backup_path: Path | None,
     target: Path,
-    backup_dir: Path | None,
+    *,
+    requires_sudo: bool,
     options: RuntimeOptions,
     logger: Logger,
 ) -> None:
-    """Create a safe user-space symlink."""
-    logger.debug(
-        f"Processing user symlink: {source} -> {target}"
-    )
-
-    if not source.exists():
-        raise FileNotFoundError(
-            f"Source does not exist: {source}"
-        )
-
-    if paths_are_same_symlink(target, source):
-        logger.success(
-            f"Already linked: {target} -> {source}"
-        )
+    """Attempt to restore the original target if symlink creation fails."""
+    if backup_path is None or options.dry_run:
+        return
+    if not path_exists(backup_path) or path_exists(target):
         return
 
+    logger.warning(f"Restoring backup: {backup_path} -> {target}")
+
+    try:
+        if requires_sudo:
+            run_sudo(["mv", "--", str(backup_path), str(target)], options, logger)
+        else:
+            shutil.move(str(backup_path), str(target))
+    except Exception as exc:
+        logger.error(f"Could not restore backup for {target}: {exc}")
+
+
+# =============================================================================
+# SYMLINK PROCESSING
+# =============================================================================
+
+def process_symlink(
+    source: Path,
+    target: Path,
+    backup_root: Path | None,
+    reserved_backups: set[Path],
+    *,
+    requires_sudo: bool,
+    options: RuntimeOptions,
+    logger: Logger,
+) -> None:
     ensure_parent_directory(
         target,
-        options,
-        logger,
+        requires_sudo=requires_sudo,
+        options=options,
+        logger=logger,
     )
 
-    if path_exists(target):
-        if backup_dir is None:
-            raise RuntimeError(
-                f"Target exists but backup is disabled: {target}"
-            )
+    backup_path: Path | None = None
 
-        backup_existing_target(
+    if path_exists(target):
+        if backup_root is not None:
+            backup_path = backup_existing_target(
+                target,
+                backup_root,
+                requires_sudo=requires_sudo,
+                options=options,
+                logger=logger,
+                reserved_paths=reserved_backups,
+            )
+        else:
+            logger.warning(f"Replacing without backup: {target}")
+            if requires_sudo:
+                run_sudo(["rm", "-rf", "--", str(target)], options, logger)
+            else:
+                remove_path(target, options, logger)
+
+    label = "Link (system)" if requires_sudo else "Link"
+    logger.info(f"{label}: {source} -> {target}")
+
+    try:
+        if options.dry_run:
+            return
+
+        if requires_sudo:
+            run_sudo(
+                ["ln", "-sfnT", "--", str(source), str(target)],
+                options,
+                logger,
+            )
+        else:
+            target.symlink_to(source)
+    except Exception:
+        restore_backup(
+            backup_path,
             target,
-            backup_dir,
-            options,
-            logger,
+            requires_sudo=requires_sudo,
+            options=options,
+            logger=logger,
         )
-
-    logger.info(
-        f"Link: {source} -> {target}"
-    )
-
-    if options.dry_run:
-        return
-
-    target.symlink_to(source)
-
-
-# =============================================================================
-# SYSTEM SYMLINKS
-# =============================================================================
-
-def run_sudo(
-    command: list[str],
-    options: RuntimeOptions,
-    logger: Logger,
-) -> None:
-    """Execute a sudo command unless running in dry-run mode."""
-    logger.debug(
-        "sudo command: " + " ".join(command)
-    )
-
-    if options.dry_run:
-        return
-
-    subprocess.run(
-        ["sudo", *command],
-        check=True,
-    )
-
-
-def process_system_symlink(
-    source: Path,
-    target: Path,
-    backup_dir: Path | None,
-    options: RuntimeOptions,
-    logger: Logger,
-) -> None:
-    """Create a safe system-level symlink."""
-    logger.debug(
-        f"Processing system symlink: {source} -> {target}"
-    )
-
-    if not source.exists():
-        raise FileNotFoundError(
-            f"Source does not exist: {source}"
-        )
-
-    if paths_are_same_symlink(target, source):
-        logger.success(
-            f"Already linked: {target} -> {source}"
-        )
-        return
-
-    # -------------------------------------------------------------------------
-    # Backup existing system target
-    # -------------------------------------------------------------------------
-
-    if path_exists(target):
-        if backup_dir is None:
-            raise RuntimeError(
-                f"System target exists but backup is disabled: {target}"
-            )
-
-        timestamp_name = target.name
-
-        if backup_dir is not None:
-            system_backup_dir = backup_dir / "system"
-            system_backup_path = system_backup_dir / timestamp_name
-
-            logger.info(
-                f"Backup: {target} -> {system_backup_path}"
-            )
-
-            if not options.dry_run:
-                system_backup_dir.mkdir(
-                    parents=True,
-                    exist_ok=True,
-                )
-
-                subprocess.run(
-                    [
-                        "sudo",
-                        "mv",
-                        str(target),
-                        str(system_backup_path),
-                    ],
-                    check=True,
-                )
-
-    # -------------------------------------------------------------------------
-    # Create parent directory
-    # -------------------------------------------------------------------------
-
-    run_sudo(
-        [
-            "mkdir",
-            "-p",
-            str(target.parent),
-        ],
-        options,
-        logger,
-    )
-
-    # -------------------------------------------------------------------------
-    # Create symlink
-    # -------------------------------------------------------------------------
-
-    logger.info(
-        f"Link (system): {source} -> {target}"
-    )
-
-    run_sudo(
-        [
-            "ln",
-            "-sfn",
-            str(source),
-            str(target),
-        ],
-        options,
-        logger,
-    )
+        raise
 
 
 # =============================================================================
@@ -527,34 +331,19 @@ def process_system_symlink(
 # =============================================================================
 
 def build_user_config_mappings() -> list[SymlinkTarget]:
-    """
-    Build user mappings dynamically based on desktop environment.
-    """
     mappings = list(USER_CONFIG_MAPPINGS)
 
-    if IS_WSL_ENVIRONMENT:
+    if IS_WSL_ENVIRONMENT or not ACTIVE_DESKTOP_ENV:
         return mappings
 
-    if not ACTIVE_DESKTOP_ENV:
-        return mappings
-
-    desktop_config_name = DESKTOP_CONFIG_NAMES.get(
-        ACTIVE_DESKTOP_ENV,
-        ACTIVE_DESKTOP_ENV,
-    )
-
+    config_name = DESKTOP_CONFIG_NAMES.get(ACTIVE_DESKTOP_ENV, ACTIVE_DESKTOP_ENV)
     mappings.append(
         SymlinkTarget(
-            source_relative_path=desktop_config_name,
-            target_absolute_path=(
-                USER_HOME_DIR
-                / ".config"
-                / desktop_config_name
-            ),
+            config_name,
+            USER_HOME_DIR / ".config" / config_name,
             is_gui_only=True,
         )
     )
-
     return mappings
 
 
@@ -564,311 +353,188 @@ def build_user_config_mappings() -> list[SymlinkTarget]:
 
 def process_mapping(
     entry: SymlinkTarget,
-    backup_dir: Path | None,
+    backup_root: Path | None,
+    reserved_backups: set[Path],
+    options: RuntimeOptions,
+    logger: Logger,
+) -> MappingResult:
+    if IS_WSL_ENVIRONMENT and entry.is_gui_only:
+        logger.info(f"Skipping (WSL): {entry.source_relative_path}")
+        return "skipped"
+
+    if not entry.target_absolute_path.is_absolute():
+        logger.error(f"Target must be an absolute path: {entry.target_absolute_path}")
+        return "failed"
+
+    source_path = DOTFILES_DIR_PATH / entry.source_relative_path
+    if not source_path.exists():
+        logger.warning(f"Skipping (source not found): {source_path}")
+        return "skipped"
+
+    try:
+        source = source_path.resolve(strict=True)
+        target = entry.target_absolute_path
+
+        if paths_are_same_symlink(target, source):
+            logger.success(f"Already linked: {target} -> {source}")
+            return "success"
+
+        process_symlink(
+            source,
+            target,
+            backup_root,
+            reserved_backups,
+            requires_sudo=entry.requires_sudo,
+            options=options,
+            logger=logger,
+        )
+        return "success"
+
+    except subprocess.CalledProcessError as exc:
+        logger.error(f"Command failed for {entry.target_absolute_path}: exit code {exc.returncode}")
+    except PermissionError as exc:
+        logger.error(f"Permission denied for {entry.target_absolute_path}: {exc}")
+    except (OSError, RuntimeError, ValueError) as exc:
+        logger.error(f"Could not process {entry.target_absolute_path}: {exc}")
+
+    return "failed"
+
+
+def preflight_sudo(
+    mappings: list[SymlinkTarget],
     options: RuntimeOptions,
     logger: Logger,
 ) -> bool:
-    """
-    Process a single mapping.
+    needs_sudo = any(
+        entry.requires_sudo
+        and not (IS_WSL_ENVIRONMENT and entry.is_gui_only)
+        and (DOTFILES_DIR_PATH / entry.source_relative_path).exists()
+        for entry in mappings
+    )
 
-    Returns:
-        True  = success
-        False = skipped
-    """
-    # -------------------------------------------------------------------------
-    # WSL GUI filtering
-    # -------------------------------------------------------------------------
-
-    if IS_WSL_ENVIRONMENT and entry.is_gui_only:
-        logger.info(
-            f"Skipping (WSL): {entry.source_relative_path}"
-        )
-        return False
-
-    source = (
-        DOTFILES_DIR_PATH
-        / entry.source_relative_path
-    ).resolve()
-
-    target = entry.target_absolute_path
-
-    # -------------------------------------------------------------------------
-    # Source validation
-    # -------------------------------------------------------------------------
-
-    if not source.exists():
-        logger.warning(
-            f"Skipping (source not found): {source}"
-        )
+    if not needs_sudo or options.dry_run:
+        return True
+    if shutil.which("sudo") is None:
+        logger.error("Required command not found: sudo")
         return False
 
     try:
-        if entry.requires_sudo:
-            process_system_symlink(
-                source,
-                target,
-                backup_dir,
-                options,
-                logger,
-            )
-        else:
-            process_user_symlink(
-                source,
-                target,
-                backup_dir,
-                options,
-                logger,
-            )
-
-        return True
-
+        subprocess.run(["sudo", "-v"], check=True)
     except subprocess.CalledProcessError as exc:
-        logger.error(
-            f"Command failed for {target}: "
-            f"exit code {exc.returncode}"
-        )
+        logger.error(f"Could not authenticate with sudo: exit code {exc.returncode}")
         return False
 
-    except PermissionError as exc:
-        logger.error(
-            f"Permission denied for {target}: {exc}"
-        )
-        return False
-
-    except OSError as exc:
-        logger.error(
-            f"Filesystem error for {target}: {exc}"
-        )
-        return False
-
-    except RuntimeError as exc:
-        logger.error(str(exc))
-        return False
+    return True
 
 
 # =============================================================================
-# CLI
+# CLI / MAIN
 # =============================================================================
 
 def parse_arguments() -> argparse.Namespace:
-    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description="Safely install dotfiles using symbolic links.",
     )
-
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Show what would happen without changing anything.",
+        help="Show planned changes without modifying the filesystem.",
     )
-
     parser.add_argument(
         "--verbose",
         "-v",
         action="store_true",
         help="Enable verbose/debug output.",
     )
-
     parser.add_argument(
         "--no-backup",
         action="store_true",
-        help="Do not backup existing configuration files.",
+        help="Replace existing targets without creating backups.",
     )
-
     return parser.parse_args()
 
 
-# =============================================================================
-# MAIN
-# =============================================================================
-
 def main() -> int:
     args = parse_arguments()
-
     options = RuntimeOptions(
         dry_run=args.dry_run,
         verbose=args.verbose,
         backup=not args.no_backup,
     )
+    logger = Logger(options.verbose)
 
-    logger = Logger(
-        verbose=options.verbose,
-    )
-
-    # -------------------------------------------------------------------------
-    # Header
-    # -------------------------------------------------------------------------
-
-    print()
-    print("=== Dotfiles Symlink Setup ===")
-    print()
-
-    logger.info(
-        f"Dotfiles directory: {DOTFILES_DIR_PATH}"
-    )
+    print("\n=== Dotfiles Symlink Setup ===\n")
+    logger.info(f"Dotfiles directory: {DOTFILES_DIR_PATH}")
 
     if IS_WSL_ENVIRONMENT:
-        logger.info(
-            "Environment: WSL (GUI targets will be skipped)"
-        )
+        logger.info("Environment: WSL (GUI targets will be skipped)")
     elif ACTIVE_DESKTOP_ENV:
-        logger.info(
-            f"Desktop environment: {ACTIVE_DESKTOP_ENV}"
-        )
+        logger.info(f"Desktop environment: {ACTIVE_DESKTOP_ENV}")
     else:
-        logger.info(
-            "Desktop environment: not detected"
-        )
+        logger.info("Desktop environment: not detected")
 
     if options.dry_run:
-        logger.warning(
-            "DRY RUN: no filesystem changes will be made."
-        )
-
+        logger.warning("DRY RUN: no filesystem changes will be made.")
     if not options.backup:
-        logger.warning(
-            "Backup disabled."
-        )
-
-    print()
-
-    # -------------------------------------------------------------------------
-    # Validate dotfiles directory
-    # -------------------------------------------------------------------------
-
-    if not DOTFILES_DIR_PATH.exists():
-        logger.error(
-            f"Dotfiles directory does not exist: "
-            f"{DOTFILES_DIR_PATH}"
-        )
-        return 1
+        logger.warning("Backup disabled; existing targets will be replaced permanently.")
 
     if not DOTFILES_DIR_PATH.is_dir():
-        logger.error(
-            f"Dotfiles path is not a directory: "
-            f"{DOTFILES_DIR_PATH}"
-        )
+        logger.error(f"Dotfiles directory does not exist or is not a directory: {DOTFILES_DIR_PATH}")
+        return 1
+    if os.geteuid() == 0:
+        logger.error("Do not run this script as root. Run it as your normal user.")
         return 1
 
-    # -------------------------------------------------------------------------
-    # Backup directory
-    # -------------------------------------------------------------------------
+    user_mappings = build_user_config_mappings()
+    if not preflight_sudo(SYSTEM_CONFIG_MAPPINGS, options, logger):
+        return 1
 
-    backup_dir: Path | None = None
-
+    backup_root = None
     if options.backup:
-        backup_root = (
-            USER_HOME_DIR
-            / BACKUP_DIR_NAME
-        )
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        backup_root = USER_HOME_DIR / BACKUP_DIR_NAME / timestamp
 
-        try:
-            backup_dir = create_backup_directory(
+    reserved_backups: set[Path] = set()
+    counts = {"total": 0, "success": 0, "skipped": 0, "failed": 0}
+
+    for group_name, mappings in (
+        ("user configurations", user_mappings),
+        ("system configurations", SYSTEM_CONFIG_MAPPINGS),
+    ):
+        logger.info(f"Processing {group_name}...")
+
+        for entry in mappings:
+            counts["total"] += 1
+            result = process_mapping(
+                entry,
                 backup_root,
+                reserved_backups,
                 options,
                 logger,
             )
+            counts["success" if result == "success" else result] += 1
 
-            logger.debug(
-                f"Backup directory: {backup_dir}"
-            )
+    print("\n=== Summary ===")
+    print(f"Total:      {counts['total']}")
+    print(f"Successful: {counts['success']}")
+    print(f"Skipped:    {counts['skipped']}")
+    print(f"Failed:     {counts['failed']}")
 
-        except OSError as exc:
-            logger.error(
-                f"Could not create backup directory: {exc}"
-            )
-            return 1
-
-    # -------------------------------------------------------------------------
-    # Counters
-    # -------------------------------------------------------------------------
-
-    total = 0
-    successful = 0
-    skipped = 0
-    failed = 0
-
-    # -------------------------------------------------------------------------
-    # User configurations
-    # -------------------------------------------------------------------------
-
-    logger.info("Processing user configurations...")
-
-    user_mappings = build_user_config_mappings()
-
-    for entry in user_mappings:
-        total += 1
-
-        result = process_mapping(
-            entry,
-            backup_dir,
-            options,
-            logger,
-        )
-
-        if result:
-            successful += 1
-        else:
-            skipped += 1
-
-    # -------------------------------------------------------------------------
-    # System configurations
-    # -------------------------------------------------------------------------
-
-    logger.info("Processing system configurations...")
-
-    for entry in SYSTEM_CONFIG_MAPPINGS:
-        total += 1
-
-        result = process_mapping(
-            entry,
-            backup_dir,
-            options,
-            logger,
-        )
-
-        if result:
-            successful += 1
-        else:
-            skipped += 1
-
-    # -------------------------------------------------------------------------
-    # Summary
-    # -------------------------------------------------------------------------
-
-    print()
-    print("=== Summary ===")
-    print(f"Total:      {total}")
-    print(f"Successful: {successful}")
-    print(f"Skipped:    {skipped}")
-    print(f"Failed:     {failed}")
-
-    if backup_dir is not None:
-        print(f"Backups:    {backup_dir}")
-
+    if backup_root is not None and reserved_backups:
+        print(f"Backups:    {backup_root}")
     if options.dry_run:
-        print()
-        print("Dry-run complete. No changes were made.")
+        print("\nDry-run complete. No changes were made.")
 
     print()
-
-    # We currently treat skipped items as non-fatal.
-    # Exceptions are handled inside process_mapping.
-    return 0
+    return 1 if counts["failed"] else 0
 
 
 if __name__ == "__main__":
     try:
         sys.exit(main())
     except KeyboardInterrupt:
-        print(
-            "\n[WARN] Interrupted by user.",
-            file=sys.stderr,
-        )
+        print("\n[WARN] Interrupted by user.", file=sys.stderr)
         sys.exit(130)
     except Exception as exc:
-        print(
-            f"[ERROR] Unexpected failure: {exc}",
-            file=sys.stderr,
-        )
+        print(f"[ERROR] Unexpected failure: {exc}", file=sys.stderr)
         sys.exit(1)
