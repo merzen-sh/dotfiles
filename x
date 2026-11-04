@@ -26,7 +26,6 @@ readonly DESKTOP_PACKAGES=(
     docker
     docker-compose
     flatpak
-    paru
     noctalia
 )
 
@@ -69,16 +68,11 @@ trap on_error ERR
 # =============================================================================
 
 is_wsl() {
-    if [[ -n "${WSL_INTEROP:-}" ]]; then
-        return 0
-    fi
-
-    if [[ -r /proc/version ]] &&
-        grep -qiE 'microsoft|wsl' /proc/version; then
-        return 0
-    fi
-
-    return 1
+    [[ -n "${WSL_INTEROP:-}" ]] ||
+        {
+            [[ -r /proc/version ]] &&
+                grep -qiE 'microsoft|wsl' /proc/version
+        }
 }
 
 # =============================================================================
@@ -105,10 +99,12 @@ echo
 log "Dotfiles directory: ${DOTFILES_DIR}"
 
 if is_wsl; then
-    log "Environment: WSL"
+    readonly ENVIRONMENT="WSL"
 else
-    log "Environment: Native Linux"
+    readonly ENVIRONMENT="Native Linux"
 fi
+
+log "Environment: ${ENVIRONMENT}"
 
 # =============================================================================
 # Basic Checks
@@ -127,7 +123,6 @@ fi
 
 require_command pacman
 require_command sudo
-require_command mise
 
 sudo -v
 
@@ -139,51 +134,32 @@ echo
 echo "[1/3] Configuring mise..."
 
 if [[ ! -f "$MISE_CONFIG_SOURCE" ]]; then
-    error "mise.toml not found:"
-    error "  ${MISE_CONFIG_SOURCE}"
+    error "mise.toml not found: ${MISE_CONFIG_SOURCE}"
     exit 1
 fi
 
 mkdir -p "$MISE_CONFIG_DIR"
 
-if [[ -L "$MISE_CONFIG_TARGET" ]]; then
-    CURRENT_TARGET="$(readlink "$MISE_CONFIG_TARGET")"
+if [[ -L "$MISE_CONFIG_TARGET" ]] &&
+    [[ "$(readlink "$MISE_CONFIG_TARGET")" == "$MISE_CONFIG_SOURCE" ]]; then
 
-    if [[ "$CURRENT_TARGET" == "$MISE_CONFIG_SOURCE" ]]; then
-        success "mise.toml is already linked."
-    else
-        log "Updating existing mise.toml symlink..."
-
-        ln -sfn \
-            "$MISE_CONFIG_SOURCE" \
-            "$MISE_CONFIG_TARGET"
-
-        success "mise.toml symlink updated."
-    fi
-
-elif [[ -e "$MISE_CONFIG_TARGET" ]]; then
-    warn "Existing mise.toml found:"
-    warn "  ${MISE_CONFIG_TARGET}"
-
-    BACKUP_PATH="${MISE_CONFIG_TARGET}.backup.$(date +%Y%m%d-%H%M%S)"
-
-    mv \
-        "$MISE_CONFIG_TARGET" \
-        "$BACKUP_PATH"
-
-    log "Backup created:"
-    log "  ${BACKUP_PATH}"
-
-    ln -s \
-        "$MISE_CONFIG_SOURCE" \
-        "$MISE_CONFIG_TARGET"
-
-    success "mise.toml linked."
+    success "mise.toml is already linked."
 
 else
-    ln -s \
-        "$MISE_CONFIG_SOURCE" \
-        "$MISE_CONFIG_TARGET"
+    if [[ -L "$MISE_CONFIG_TARGET" ]]; then
+        log "Updating existing mise.toml symlink..."
+
+    elif [[ -e "$MISE_CONFIG_TARGET" ]]; then
+        warn "Existing mise.toml found: ${MISE_CONFIG_TARGET}"
+
+        BACKUP_PATH="${MISE_CONFIG_TARGET}.backup.$(date +%Y%m%d-%H%M%S)"
+
+        mv "$MISE_CONFIG_TARGET" "$BACKUP_PATH"
+
+        log "Backup created: ${BACKUP_PATH}"
+    fi
+
+    ln -sfn "$MISE_CONFIG_SOURCE" "$MISE_CONFIG_TARGET"
 
     success "mise.toml linked."
 fi
@@ -195,38 +171,20 @@ fi
 echo
 echo "[2/3] Installing system packages..."
 
-log "Refreshing Arch Linux package database..."
+PACKAGES_TO_INSTALL=("${COMMON_PACKAGES[@]}")
+
+if [[ "$ENVIRONMENT" != "WSL" ]]; then
+    log "Including desktop packages..."
+    PACKAGES_TO_INSTALL+=("${DESKTOP_PACKAGES[@]}")
+fi
+
+log "Refreshing package database and installing packages..."
 
 sudo pacman \
     -Syu \
-    --noconfirm
-
-if is_wsl; then
-    log "Installing common packages for WSL..."
-
-    sudo pacman \
-        -S \
-        --needed \
-        --noconfirm \
-        "${COMMON_PACKAGES[@]}"
-
-else
-    log "Installing common packages..."
-
-    sudo pacman \
-        -S \
-        --needed \
-        --noconfirm \
-        "${COMMON_PACKAGES[@]}"
-
-    log "Installing desktop packages..."
-
-    sudo pacman \
-        -S \
-        --needed \
-        --noconfirm \
-        "${DESKTOP_PACKAGES[@]}"
-fi
+    --needed \
+    --noconfirm \
+    "${PACKAGES_TO_INSTALL[@]}"
 
 success "System packages installed."
 
@@ -236,6 +194,16 @@ success "System packages installed."
 
 echo
 echo "[3/3] Running mise..."
+
+if ! command -v mise >/dev/null 2>&1; then
+    log "mise not found. Installing mise..."
+
+    sudo pacman \
+        -S \
+        --needed \
+        --noconfirm \
+        mise
+fi
 
 require_command mise
 
@@ -267,4 +235,3 @@ echo "  2. Verify mise:"
 echo "       mise doctor"
 echo "  3. Verify installed tools:"
 echo "       mise ls"
-echo
